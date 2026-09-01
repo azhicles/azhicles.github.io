@@ -1,0 +1,5 @@
+# Full resolution camera files. The web sized copies in 0/media/ are what
+# the site serves; these stay local so the repo does not carry 260 MB.
+0/media/originals/
+.playwright-mcp/
+.DS_Store

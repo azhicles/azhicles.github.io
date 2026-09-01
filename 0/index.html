@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project 0 &middot; Becoming Friends with Your Camera &middot; Yong Tze Fon Timothy</title>
+<meta name="description" content="CS180 Project 0: perspective, focal length and the centre of projection, shown through a selfie sequence, an architectural pair and a dolly zoom.">
+<meta name="author" content="Yong Tze Fon Timothy">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23F4F1E8'/><circle cx='16' cy='16' r='8' fill='none' stroke='%233F4A2E' stroke-width='1.8'/><circle cx='16' cy='16' r='2.6' fill='%233F4A2E'/><path d='M16 8v3M16 21v3M8 16h3M21 16h3' stroke='%238A5A3C' stroke-width='1.6'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<script src="../scripts.js" defer></script>
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="tocnav" aria-label="Sections">
+  <a href="#part-1" aria-current="false">01</a>
+  <a href="#part-2" aria-current="false">02</a>
+  <a href="#part-3" aria-current="false">03</a>
+</nav>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <p class="masthead__meta">
+      <a href="../">&larr; All projects</a>
+      <span class="hairline" aria-hidden="true"></span>
+      <span>CS180 &middot; FA26</span>
+    </p>
+
+    <h1 class="masthead__title">Becoming Friends<br>with Your Camera</h1>
+
+    <p class="byline">Yong Tze Fon Timothy</p>
+    <p class="dateline">Project 0 &middot; CS180: Intro to Computer Vision &amp; Computational Photography &middot; UC Berkeley &middot; Fall 2026</p>
+    <p class="dateline"><a href="https://cal-cs180.github.io/fa26/hw/proj0/">Assignment brief</a></p>
+  </header>
+
+  <main id="main">
+
+    <!-- ================================================================ -->
+    <!-- Part 1                                                           -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-1" aria-labelledby="part-1-title">
+      <header class="part__head">
+        <p class="eyebrow">Part 1</p>
+        <h2 class="part__title" id="part-1-title">Selfie: the wrong way vs the right way</h2>
+      </header>
+
+      <p class="fig-label">Fig. 01 &middot; Animation</p>
+      <figure class="plate gif-plate ratio-portrait">
+        <div class="plate__well">
+          <img src="media/part1.gif" alt="The eight portrait frames animated in sequence.">
+        </div>
+        <figcaption>
+          <span class="plate__label">Eight frames, looped</span>
+          <span class="spec">27 to 71 mm eq</span>
+        </figcaption>
+      </figure>
+
+      <p class="fig-label">Fig. 02 &middot; Frames</p>
+      <div class="sequence ratio-portrait" data-sequence>
+        <ol class="filmstrip">
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-01.jpg" alt="Portrait frame 1 of 8, shot at 27 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">01</span>
+              <span class="spec">27 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-02.jpg" alt="Portrait frame 2 of 8, shot at 33 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">02</span>
+              <span class="spec">33 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-03.jpg" alt="Portrait frame 3 of 8, shot at 35 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">03</span>
+              <span class="spec">35 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-04.jpg" alt="Portrait frame 4 of 8, shot at 39 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">04</span>
+              <span class="spec">39 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-05.jpg" alt="Portrait frame 5 of 8, shot at 42 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">05</span>
+              <span class="spec">42 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-06.jpg" alt="Portrait frame 6 of 8, shot at 52 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">06</span>
+              <span class="spec">52 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-07.jpg" alt="Portrait frame 7 of 8, shot at 59 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">07</span>
+              <span class="spec">59 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part1-08.jpg" alt="Portrait frame 8 of 8, shot at 71 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">08</span>
+              <span class="spec">71 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        </ol>
+      </div>
+      <p class="camera-line">Fujifilm X-T30 III &middot; f/4.5 &middot; ISO 320 &middot; focal length in 35 mm equivalent</p>
+
+      <p class="part__desc">Portraits of my friend Yvonne outside The Gateway.</p>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Part 2                                                           -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-2" aria-labelledby="part-2-title">
+      <header class="part__head">
+        <p class="eyebrow">Part 2</p>
+        <h2 class="part__title" id="part-2-title">Architectural perspective compression</h2>
+      </header>
+
+      <p class="fig-label">Fig. 03 &middot; Frames</p>
+      <div class="sequence ratio-landscape" data-sequence>
+        <ol class="filmstrip cols-2">
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part2-zoom.jpg" alt="The auditorium facade from across the field at 51 mm equivalent, with the depth compressed.">
+            </div>
+            <figcaption>
+              <span class="plate__label">Far, zoomed</span>
+              <span class="spec">51 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part2-close.jpg" alt="The same facade from much closer at 41 mm equivalent, with the lines converging harder.">
+            </div>
+            <figcaption>
+              <span class="plate__label">Walked up</span>
+              <span class="spec">41 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        </ol>
+      </div>
+      <p class="camera-line">Fujifilm X-T30 III &middot; f/5.6 &middot; ISO 320 &middot; focal length in 35 mm equivalent</p>
+
+      <div class="compare ratio-landscape" data-compare hidden>
+        <p class="compare__legend">
+          <span>Far, zoomed</span>
+          <span class="compare__hint">Drag</span>
+          <span>Walked up</span>
+        </p>
+        <div class="compare__viewport">
+          <img src="media/part2-close.jpg" alt="">
+          <div class="compare__top"><img src="media/part2-zoom.jpg" alt=""></div>
+          <div class="compare__handle" role="slider" tabindex="0"
+               aria-label="Wipe between the zoomed and close photographs of the auditorium"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+        </div>
+      </div>
+
+      <p class="part__desc">The Zoology section of the Chan Shun Auditorium peeking out.</p>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Part 3                                                           -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-3" aria-labelledby="part-3-title">
+      <header class="part__head">
+        <p class="eyebrow">Part 3</p>
+        <h2 class="part__title" id="part-3-title">The dolly zoom</h2>
+      </header>
+
+      <p class="fig-label">Fig. 04 &middot; Animation</p>
+      <figure class="plate gif-plate ratio-portrait">
+        <div class="plate__well">
+          <img src="media/part3.gif" alt="The dolly zoom animated: the corridor stretches while the far door holds its size.">
+        </div>
+        <figcaption>
+          <span class="plate__label">Eleven frames, looped</span>
+          <span class="spec">27 to 71 mm eq</span>
+        </figcaption>
+      </figure>
+
+      <p class="fig-label">Fig. 05 &middot; Frames</p>
+      <div class="sequence ratio-portrait" data-sequence>
+        <ol class="filmstrip">
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-01.jpg" alt="Dolly zoom frame 1 of 11, shot at 27 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">01</span>
+              <span class="spec">27 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-02.jpg" alt="Dolly zoom frame 2 of 11, shot at 32 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">02</span>
+              <span class="spec">32 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-03.jpg" alt="Dolly zoom frame 3 of 11, shot at 36 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">03</span>
+              <span class="spec">36 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-04.jpg" alt="Dolly zoom frame 4 of 11, shot at 39 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">04</span>
+              <span class="spec">39 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-05.jpg" alt="Dolly zoom frame 5 of 11, shot at 44 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">05</span>
+              <span class="spec">44 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-06.jpg" alt="Dolly zoom frame 6 of 11, shot at 50 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">06</span>
+              <span class="spec">50 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-07.jpg" alt="Dolly zoom frame 7 of 11, shot at 51 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">07</span>
+              <span class="spec">51 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-08.jpg" alt="Dolly zoom frame 8 of 11, shot at 57 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">08</span>
+              <span class="spec">57 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-09.jpg" alt="Dolly zoom frame 9 of 11, shot at 59 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">09</span>
+              <span class="spec">59 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-10.jpg" alt="Dolly zoom frame 10 of 11, shot at 66 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">10</span>
+              <span class="spec">66 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="plate">
+            <div class="plate__well">
+              <img src="media/part3-11.jpg" alt="Dolly zoom frame 11 of 11, shot at 71 mm equivalent.">
+            </div>
+            <figcaption>
+              <span class="plate__label">11</span>
+              <span class="spec">71 mm eq</span>
+            </figcaption>
+          </figure>
+        </li>
+        </ol>
+      </div>
+      <p class="camera-line">Fujifilm X-T30 III &middot; f/2.8 &middot; ISO 1250 to 1600 &middot; focal length in 35 mm equivalent</p>
+
+      <p class="part__desc">Navigating the haunting hallways of the International House after a night out.</p>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <span><a href="../">&larr; All projects</a></span>
+    <span>Yong Tze Fon Timothy &middot; CS180 Project 0</span>
+    <span><a href="https://azhicles.github.io/0/">azhicles.github.io/0/</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
