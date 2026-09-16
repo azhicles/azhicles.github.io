@@ -15,6 +15,7 @@
      10. Section nav
      11. Project index (root page)
      12. Print
+     13. Prose: contents block, running text, ledger tables, field notes
 
    To restyle a future project, override the tokens in section 1. The
    component rules below read from them and should not need editing.
@@ -779,4 +780,207 @@ button { font: inherit; }
   .plate__well { border-color: var(--rule-strong); }
 
   .colophon { break-inside: avoid; padding-bottom: 0; }
+}
+
+/* 13. Prose ============================================================== */
+
+/* Project 1 onward carry real writing between the figures. The running
+   text sits in a centred column at the reading measure; figures keep
+   using the wider caps from section 4. Everything reads from the tokens. */
+
+.prose {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+.prose p { max-width: none; }
+
+.prose h3 {
+  font-weight: 400;
+  font-size: clamp(1.2rem, 1.05rem + .5vw, 1.4rem);
+  line-height: 1.3;
+  color: var(--olive);
+  margin: 2.4rem 0 .7rem;
+}
+.prose h3:first-child { margin-top: 0; }
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.4em;
+}
+.prose li { margin-bottom: .35em; }
+.prose li::marker { color: var(--olive-soft); }
+
+.prose strong { font-weight: 700; color: var(--olive); }
+.prose em { font-style: italic; }
+
+/* Numbers, offsets and file names, set in the mono face so they read as
+   data rather than as words. */
+.prose code,
+.ledger .num,
+.num {
+  font-family: var(--font-mono);
+  font-size: .84em;
+  letter-spacing: 0;
+  color: var(--olive);
+  white-space: nowrap;
+}
+
+/* A formula card. LaTeX rendered by KaTeX (loaded per page), mounted on
+   sunken stock like the notes so it reads as part of the same system. */
+.formula {
+  max-width: var(--measure);
+  margin: 1.3rem auto 1.6rem;
+  padding: .9rem 1.3rem;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  color: var(--olive);
+  text-align: center;
+  overflow-x: auto;
+}
+.formula .katex-display { margin: .35rem 0; }
+.formula .katex { font-size: 1.08em; }
+
+/* Contents. A ruled block after the introduction, listing every section
+   so the page can be navigated without the fixed side nav (which hides
+   on narrow screens). */
+.contents {
+  max-width: var(--measure);
+  margin: 2.25rem auto 0;
+  padding: 1.25rem 0 .75rem;
+  border-top: 1px solid var(--rule-strong);
+}
+.contents ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: var(--gutter);
+}
+.contents li { break-inside: avoid; }
+.contents a {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: .5rem;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1.35;
+}
+.contents a:hover { color: var(--accent); }
+.contents__num { color: var(--accent); }
+@media (max-width: 560px) { .contents ol { columns: 1; } }
+
+/* Ledger table: hairline rules only, mono for the numbers, header set
+   like the other small labels. Wrapped in .ledger-wrap so a wide table
+   scrolls sideways on a phone instead of breaking the page. */
+.ledger-wrap {
+  max-width: 60rem;
+  margin: 1.2rem auto 1.9rem;
+  overflow-x: auto;
+}
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+  line-height: 1.45;
+}
+/* The table's note sits outside .ledger-wrap so it never scrolls with a
+   wide table on a phone. */
+.ledger__note {
+  max-width: 60rem;
+  margin: -1.2rem auto 1.9rem;
+  color: var(--olive-soft);
+  font-size: .9rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+.ledger th {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--olive-soft);
+  text-align: left;
+  padding: .45rem .7rem .55rem;
+  border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+.ledger td {
+  padding: .5rem .7rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.ledger tr:last-child td { border-bottom: 1px solid var(--rule-strong); }
+.ledger .num,
+.ledger th.num { text-align: right; }
+.ledger .is-wrong { color: var(--accent); }
+
+/* Field note. An aside for a wrong turn or a measurement, mounted like
+   the part description in section 4: sunken stock, hairline border, and
+   an accent rule down the left so it reads as a margin note. */
+.note {
+  max-width: var(--measure);
+  margin: 1.7rem auto;
+  padding: 1rem 1.3rem 1.05rem;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+}
+.note__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: .45rem;
+}
+.note p { max-width: none; }
+
+/* Two or three plates side by side, each with its own caption. */
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 60rem;
+  margin: 0 auto 1.75rem;
+}
+.pair--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pair .plate { margin: 0; }
+@media (max-width: 620px) {
+  .pair,
+  .pair--3 { grid-template-columns: 1fr; }
+}
+
+/* The plates on this project are not all the same shape, so a sequence
+   of mixed frames letterboxes on the sunken stock instead of cropping. */
+.fit-contain .plate__well img,
+.fit-contain .stage__well img,
+.fit-contain .compare__viewport img { object-fit: contain; }
+
+/* Square-ish shapes for the scans and the detail crops. */
+.ratio-scan   { --ratio: 1.15 / 1; }
+.ratio-square { --ratio: 1 / 1; }
+.ratio-tall   { --ratio: 5 / 6; }
+.ratio-plate  { --ratio: 390 / 1024; }
+.ratio-wide   { --ratio: 3 / 1; }
+.ratio-strip  { --ratio: 5 / 6; }
+
+/* A modest cap for a single standalone plate, and a wider one for a
+   composite figure. */
+.plate.solo { max-width: 46rem; margin-inline: auto; margin-bottom: 1.75rem; }
+.plate.solo--narrow { max-width: 27rem; }
+.plate.solo--thin { max-width: 11rem; }
+.plate.solo--wide { max-width: 60rem; }
+
+@media print {
+  .note,
+  .ledger-wrap,
+  .pair .plate { break-inside: avoid; }
+  .contents ol { columns: 2; }
+  .prose h3 { break-after: avoid; }
 }

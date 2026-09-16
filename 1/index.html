@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project 1 &middot; Images of the Russian Empire &middot; Yong Tze Fon Timothy</title>
+<meta name="description" content="CS180 Project 1: colourising the Prokudin-Gorskii glass plate negatives by aligning the three colour channels, with an image pyramid, gradient features, and automatic cropping, contrast, white balance and colour correction.">
+<meta name="author" content="Yong Tze Fon Timothy">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23F4F1E8'/><circle cx='16' cy='16' r='8' fill='none' stroke='%233F4A2E' stroke-width='1.8'/><circle cx='16' cy='16' r='2.6' fill='%233F4A2E'/><path d='M16 8v3M16 21v3M8 16h3M21 16h3' stroke='%238A5A3C' stroke-width='1.6'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" defer
+        onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+<script src="../scripts.js" defer></script>
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="tocnav" aria-label="Sections">
+  <a href="#part-1" aria-current="false">01</a>
+  <a href="#part-2" aria-current="false">02</a>
+  <a href="#part-3" aria-current="false">03</a>
+  <a href="#part-4" aria-current="false">04</a>
+  <a href="#part-5" aria-current="false">05</a>
+  <a href="#part-6" aria-current="false">06</a>
+  <a href="#part-7" aria-current="false">07</a>
+  <a href="#part-8" aria-current="false">08</a>
+  <a href="#part-9" aria-current="false">09</a>
+  <a href="#part-10" aria-current="false">10</a>
+</nav>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <p class="masthead__meta">
+      <a href="../">&larr; All projects</a>
+      <span class="hairline" aria-hidden="true"></span>
+      <span>CS180 &middot; FA26</span>
+    </p>
+
+    <h1 class="masthead__title">Images of the<br>Russian Empire</h1>
+
+    <p class="byline">Yong Tze Fon Timothy</p>
+    <p class="dateline">Project 1 &middot; Colourising the Prokudin-Gorskii photo collection &middot; CS180: Intro to Computer Vision &amp; Computational Photography &middot; UC Berkeley &middot; Fall 2026</p>
+    <p class="dateline"><a href="https://cal-cs180.github.io/fa26/hw/proj1/index.html">Assignment brief</a></p>
+  </header>
+
+  <main id="main">
+
+    <div class="prose">
+      <p>Sergei Prokudin-Gorskii photographed the Russian Empire in colour between 1907 and 1915 by exposing each scene three times onto one glass plate, through a blue, a green and a red filter. The Library of Congress scanned the plates. Each scan is one tall grey image with the three exposures stacked vertically.</p>
+      <p>This page reconstructs the colour photographs. I cut each scan into thirds, find the translation that aligns the green and red frames to the blue one, and stack them. I then add automatic cropping, contrast, white balance and a colour correction. I kept two menthods that failed initially to explain the final choices.</p>
+    </div>
+
+    <nav class="contents" aria-label="Contents">
+      <ol>
+        <li><a href="#part-1"><span class="contents__num">01</span><span>The plates</span></a></li>
+        <li><a href="#part-2"><span class="contents__num">02</span><span>Single-scale alignment</span></a></li>
+        <li><a href="#part-3"><span class="contents__num">03</span><span>Image pyramid</span></a></li>
+        <li><a href="#part-4"><span class="contents__num">04</span><span>Aligning on edges</span></a></li>
+        <li><a href="#part-5"><span class="contents__num">05</span><span>Results on all plates</span></a></li>
+        <li><a href="#part-6"><span class="contents__num">06</span><span>Three plates of my own</span></a></li>
+        <li><a href="#part-7"><span class="contents__num">07</span><span>Automatic cropping</span></a></li>
+        <li><a href="#part-8"><span class="contents__num">08</span><span>Contrast and white balance</span></a></li>
+        <li><a href="#part-9"><span class="contents__num">09</span><span>Colour mapping</span></a></li>
+        <li><a href="#part-10"><span class="contents__num">10</span><span>Limitations and final results</span></a></li>
+      </ol>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- 01 The plates                                                    -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-1" aria-labelledby="part-1-title">
+      <header class="part__head">
+        <p class="eyebrow">01</p>
+        <h2 class="part__title" id="part-1-title">The plates</h2>
+      </header>
+
+      <div class="prose">
+        <p>A scan has three frames, top to bottom blue, green and red, each surrounded by its own border of unexposed and masked glass. The exposures were made in sequence with one camera, so the frames differ by a small translation, plus whatever moved in the scene. I read the scan as a grey image, cut it into three equal heights, and search for the <span class="num">(row, column)</span> shift that moves G onto B and the one that moves R onto B.</p>
+        <p>The data comes as three small JPEGs (about 340 by 390 pixels per frame) and eleven 16-bit TIFFs (about 3200 by 3700).</p>
+      </div>
+
+      <p class="fig-label">Fig. 01 &middot; One scan and its three frames</p>
+      <figure class="plate solo solo--thin ratio-plate">
+        <div class="plate__well">
+          <img src="media/plate-cathedral.jpg" alt="The cathedral scan: three grey frames of the same scene stacked vertically, each with a black and white border.">
+        </div>
+        <figcaption>
+          <span class="plate__label">The negative as scanned</span>
+          <span class="spec">1024 &times; 390 px</span>
+        </figcaption>
+      </figure>
+      <figure class="plate solo" style="--ratio: 1194 / 341">
+        <div class="plate__well">
+          <img src="media/plate-cathedral-frames.jpg" alt="The same three frames laid side by side: blue, green and red exposures of the cathedral.">
+        </div>
+        <figcaption>
+          <span class="plate__label">Cut into thirds: B, G, R</span>
+          <span class="spec">341 &times; 390 px each</span>
+        </figcaption>
+      </figure>
+
+      <p class="fig-label">Fig. 02 &middot; Stacked without alignment, and aligned</p>
+      <div class="pair">
+        <figure class="plate" style="--ratio: 390 / 341">
+          <div class="plate__well">
+            <img src="media/cathedral-unaligned.jpg" alt="The three cathedral frames stacked as RGB with no shift: every edge has a coloured double.">
+          </div>
+          <figcaption><span class="plate__label">No shift</span><span class="spec">colour fringes on every edge</span></figcaption>
+        </figure>
+        <figure class="plate" style="--ratio: 390 / 341">
+          <div class="plate__well">
+            <img src="media/cathedral-aligned.jpg" alt="The same frames after aligning G and R to B.">
+          </div>
+          <figcaption><span class="plate__label">Aligned</span><span class="spec">G (5, 2) &middot; R (12, 3)</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 02 Single scale                                                  -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-2" aria-labelledby="part-2-title">
+      <header class="part__head">
+        <p class="eyebrow">02</p>
+        <h2 class="part__title" id="part-2-title">Single-scale alignment</h2>
+      </header>
+
+      <div class="prose">
+        <p>For the small scans, exhaustive search is enough. I try every shift within &plusmn;15 pixels in each direction (961 candidates), roll the moving channel by each one, and keep the shift whose result matches the reference best. I considered both normalised cross-correlation, the dot product of the two images after each has its mean subtracted and is divided by its norm, and L2 distance. In the end, NCC was used for all images.</p>
+      </div>
+      <div class="formula">
+        \[ \mathrm{NCC}(a, b) = \frac{\langle\, a - \bar a,\; b - \bar b \,\rangle}{\lVert a - \bar a \rVert \; \lVert b - \bar b \rVert} \qquad\qquad \mathrm{L2}(a, b) = \lVert a - b \rVert_2 \]
+      </div>
+      <div class="prose">
+        <p>NCC ignores an overall brightness difference between the channels; the L2 distance does not. On these plates the two metrics return identical offsets on 16 of 17 (the exception is in Part 06), so NCC is used throughout.</p>
+
+        <h3>Scoring the whole frame gives wrong answers</h3>
+        <p>Scored on the full image, the search returns wrong offsets on two of the three small plates. Scored only on the interior, it returns the right ones:</p>
+      </div>
+
+      <div class="ledger-wrap">
+        <table class="ledger">
+          <thead>
+            <tr><th>Plate</th><th class="num">G, whole frame</th><th class="num">G, interior</th><th class="num">R, whole frame</th><th class="num">R, interior</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cathedral</td><td class="num is-wrong">(1, &minus;1)</td><td class="num">(5, 2)</td><td class="num is-wrong">(7, &minus;1)</td><td class="num">(12, 3)</td></tr>
+            <tr><td>Monastery</td><td class="num is-wrong">(&minus;6, 0)</td><td class="num">(&minus;3, 2)</td><td class="num is-wrong">(9, 1)</td><td class="num">(3, 2)</td></tr>
+            <tr><td>Tobolsk</td><td class="num">(3, 2)</td><td class="num">(3, 3)</td><td class="num">(6, 3)</td><td class="num">(6, 3)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ledger__note">Shifts are (rows down, columns right). The interior is the image with 34 pixels removed from each side.</p>
+
+      <div class="prose">
+        <p>The cause is the plate border. On the monastery's blue channel the edges are white on three sides (mean 1.00) and black on the fourth (0.08). The outer 34 pixels are 34% of the pixels but hold 58% of the mean-subtracted energy that NCC sums over. The border belongs to the glass, not the scene, so it sits in the same place in every channel and rewards a shift of zero. For the monastery's red channel, whole-frame NCC scores the wrong shift <span class="num">(9, 1)</span> at 0.579 and the right one <span class="num">(3, 2)</span> at 0.522; on the interior the same two shifts score 0.595 and 0.793.</p>
+        <p>The fix is to crop both images before scoring. The crop must exceed the largest shift tried, because <span class="num">np.roll</span> wraps pixels across the edge and the outer <span class="num">d</span> rows of a shifted image are garbage. It must also clear the physical border, which is about 20 pixels deep on the monastery. I crop 10% of the shorter side, or the window plus one, whichever is larger.</p>
+      </div>
+
+      <p class="fig-label">Fig. 03 &middot; The monastery scored both ways</p>
+      <div class="pair">
+        <figure class="plate" style="--ratio: 391 / 341">
+          <div class="plate__well">
+            <img src="media/monastery-fullframe.jpg" alt="The monastery aligned with whole-frame scoring: colour fringes on the domes and the bridge.">
+          </div>
+          <figcaption><span class="plate__label">Whole frame</span><span class="spec">G (&minus;6, 0) &middot; R (9, 1)</span></figcaption>
+        </figure>
+        <figure class="plate" style="--ratio: 391 / 341">
+          <div class="plate__well">
+            <img src="media/monastery-interior.jpg" alt="The monastery aligned with interior scoring: clean edges.">
+          </div>
+          <figcaption><span class="plate__label">Interior only</span><span class="spec">G (&minus;3, 2) &middot; R (3, 2)</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 04 &middot; Single-scale results on the three small plates</p>
+      <div class="pair pair--3">
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/single-cathedral.jpg" alt="Cathedral, single-scale alignment."></div>
+          <figcaption><span class="plate__label">Cathedral</span><span class="spec">G (5, 2) &middot; R (12, 3)</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/single-monastery.jpg" alt="Monastery, single-scale alignment."></div>
+          <figcaption><span class="plate__label">Monastery</span><span class="spec">G (&minus;3, 2) &middot; R (3, 2)</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/single-tobolsk.jpg" alt="Tobolsk, single-scale alignment."></div>
+          <figcaption><span class="plate__label">Tobolsk</span><span class="spec">G (3, 3) &middot; R (6, 3)</span></figcaption>
+        </figure>
+      </div>
+      <p class="camera-line">&plusmn;15 px search &middot; NCC on the interior &middot; 0.4 s per plate</p>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 03 Pyramid                                                       -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-3" aria-labelledby="part-3-title">
+      <header class="part__head">
+        <p class="eyebrow">03</p>
+        <h2 class="part__title" id="part-3-title">Image pyramid</h2>
+      </header>
+
+      <div class="prose">
+        <p>At full resolution one candidate shift costs about 24 ms (a roll and an NCC over twelve million pixels). The &plusmn;15 window would take 23 seconds per channel and still not reach the shifts in the large scans, which run to 178 pixels. Covering &plusmn;180 exhaustively would take about 52 minutes per channel.</p>
+        <p>A pyramid does it in under a second. I halve both images, with area averaging so the small versions are not aliased, until the shorter side is at most 128 pixels; for the Emir that is five halvings, 3209 &rarr; 100 rows. At the coarsest level I run the full &plusmn;15 search, which covers &plusmn;480 pixels at full size. Then at each finer level I double the estimate from below and refine it with a &plusmn;2 search around that guess. The crop from Part 02 grows with the estimate, so wrapped pixels never enter the score. On a synthetic test the recursion recovers a known shift of <span class="num">(57, &minus;33)</span> exactly.</p>
+      </div>
+
+      <p class="fig-label">Fig. 05 &middot; The pyramid</p>
+      <figure class="plate solo solo--wide" style="--ratio: 1600 / 688">
+        <div class="plate__well">
+          <img src="media/pyramid-levels.jpg" alt="The Emir's blue channel at six sizes, each half the previous, from 3209 rows down to 100.">
+        </div>
+        <figcaption>
+          <span class="plate__label">Emir, blue channel, six levels at true relative scale</span>
+          <span class="spec">a 15 px window at the smallest is 480 px at the largest</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 04 Edges                                                         -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-4" aria-labelledby="part-4-title">
+      <header class="part__head">
+        <p class="eyebrow">04</p>
+        <h2 class="part__title" id="part-4-title">Aligning on edges</h2>
+      </header>
+
+      <div class="prose">
+        <p>The first pyramid run aligned 13 of the 14 plates. The Emir's red channel came out at <span class="num">(401, &minus;483)</span>. Dividing by 32, the scale of the coarsest level, gives <span class="num">(12.5, &minus;15.1)</span>: the coarse search stopped at the corner of its &plusmn;15 window, which means it found no peak at all. This is because Emir's robe is bright in the blue exposure and dark in the red one, so the raw intensities of those two channels do not correlate.</p>
+        <p>To address this, I observed that edges do not depend on which side of them is brighter. As such, I align the gradient magnitude of each channel, computed with a Sobel filter, and apply the shift it finds to the original channel. The Emir's red channel moves to <span class="num">(107, 40)</span>.</p>
+      </div>
+
+      <p class="fig-label">Fig. 06 &middot; The Emir aligned on brightness and on edges</p>
+      <div class="compare fit-contain" style="--ratio: 1400 / 1214" data-compare hidden>
+        <p class="compare__legend">
+          <span>Brightness, R (401, &minus;483)</span>
+          <span class="compare__hint">Drag</span>
+          <span>Edges, R (107, 40)</span>
+        </p>
+        <div class="compare__viewport">
+          <img src="media/emir-gradient.jpg" alt="">
+          <div class="compare__top"><img src="media/emir-raw.jpg" alt=""></div>
+          <div class="compare__handle" role="slider" tabindex="0"
+               aria-label="Wipe between the Emir aligned on raw intensities and aligned on gradient magnitude"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+        </div>
+      </div>
+
+      <p class="fig-label">Fig. 07 &middot; What the aligner sees</p>
+      <div class="pair">
+        <figure class="plate ratio-scan">
+          <div class="plate__well">
+            <img src="media/emir-gradient-map.jpg" alt="The gradient magnitude of the Emir's blue channel: a line drawing of the robe's pattern, the door and the wall.">
+          </div>
+          <figcaption><span class="plate__label">Gradient magnitude, blue channel</span><span class="spec">Sobel after a sigma 2 blur</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan">
+          <div class="plate__well">
+            <img src="media/emir-detail.jpg" alt="The Emir's face and turban at full resolution, sharp, with no colour fringing.">
+          </div>
+          <figcaption><span class="plate__label">Full resolution after the fix</span><span class="spec">600 px crop</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <h3>Grain</h3>
+        <p>Plain Sobel on the raw scan fixed the Emir but made the religious painting worse: its offsets moved from <span class="num">(28, 3)</span> and <span class="num">(68, 7)</span> to <span class="num">(30, 7)</span> and <span class="num">(70, 6)</span>, and the figures grew doubled outlines. Each exposure has its own film grain, and a 3&times;3 Sobel amplifies that noise more than it amplifies real edges. To address this, I used a Gaussian blur of &sigma;&nbsp;=&nbsp;2 before the gradient which removes the grain and keeps the edges:</p>
+      </div>
+
+      <div class="ledger-wrap">
+        <table class="ledger">
+          <thead>
+            <tr><th>Plate, channel</th><th class="num">Raw brightness</th><th class="num">Sobel</th><th class="num">Blur, then Sobel</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Emir, R</td><td class="num is-wrong">(401, &minus;483)</td><td class="num">(107, 40)</td><td class="num">(107, 40)</td></tr>
+            <tr><td>Religious painting, G</td><td class="num">(28, 3)</td><td class="num is-wrong">(30, 7)</td><td class="num">(29, 2)</td></tr>
+            <tr><td>Religious painting, R</td><td class="num">(68, 7)</td><td class="num is-wrong">(70, 6)</td><td class="num">(68, 7)</td></tr>
+            <tr><td>Three generations, R</td><td class="num">(112, 11)</td><td class="num">(111, 9)</td><td class="num">(110, 9)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ledger__note">Blurred gradients keep the Emir and return the painting to within a pixel of the raw result. Differences of one or two pixels are not visible at full size. All results below use blurred gradients.</p>
+
+      <p class="fig-label">Fig. 08 &middot; The painting at full resolution</p>
+      <div class="pair">
+        <figure class="plate ratio-square">
+          <div class="plate__well">
+            <img src="media/painting-sobel.jpg" alt="Detail of the religious painting aligned on the plain Sobel gradient: the figures have doubled outlines.">
+          </div>
+          <figcaption><span class="plate__label">Sobel on the raw scan</span><span class="spec">G (30, 7) &middot; R (70, 6)</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well">
+            <img src="media/painting-blur.jpg" alt="The same detail aligned on the blurred gradient: single, sharp outlines.">
+          </div>
+          <figcaption><span class="plate__label">Blur, then Sobel</span><span class="spec">G (29, 2) &middot; R (68, 7)</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 05 Results                                                       -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-5" aria-labelledby="part-5-title">
+      <header class="part__head">
+        <p class="eyebrow">05</p>
+        <h2 class="part__title" id="part-5-title">Results on all plates</h2>
+      </header>
+
+      <div class="prose">
+        <p>Offsets of the green and red channels relative to blue, in (rows, columns), with the time per plate including file reading. The three small plates match their single-scale offsets exactly. The last three rows are the plates in Part 06.</p>
+      </div>
+
+      <div class="ledger-wrap">
+        <table class="ledger">
+          <thead>
+            <tr><th>Plate</th><th class="num">G shift</th><th class="num">R shift</th><th class="num">Time</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cathedral</td><td class="num">(5, 2)</td><td class="num">(12, 3)</td><td class="num">0.1 s</td></tr>
+            <tr><td>Monastery</td><td class="num">(&minus;3, 2)</td><td class="num">(3, 2)</td><td class="num">0.1 s</td></tr>
+            <tr><td>Tobolsk</td><td class="num">(3, 3)</td><td class="num">(6, 3)</td><td class="num">0.1 s</td></tr>
+            <tr><td>Church</td><td class="num">(25, 4)</td><td class="num">(59, &minus;4)</td><td class="num">2.4 s</td></tr>
+            <tr><td>Emir</td><td class="num">(49, 23)</td><td class="num">(107, 40)</td><td class="num">2.8 s</td></tr>
+            <tr><td>Harvesters</td><td class="num">(60, 17)</td><td class="num">(124, 14)</td><td class="num">3.0 s</td></tr>
+            <tr><td>Icon</td><td class="num">(42, 17)</td><td class="num">(91, 22)</td><td class="num">2.9 s</td></tr>
+            <tr><td>Ilemselga</td><td class="num">(40, 7)</td><td class="num">(131, 11)</td><td class="num">2.8 s</td></tr>
+            <tr><td>Melons</td><td class="num">(81, 10)</td><td class="num">(178, 13)</td><td class="num">2.9 s</td></tr>
+            <tr><td>Religious painting</td><td class="num">(29, 2)</td><td class="num">(68, 7)</td><td class="num">2.9 s</td></tr>
+            <tr><td>Self portrait</td><td class="num">(79, 29)</td><td class="num">(176, 37)</td><td class="num">3.7 s</td></tr>
+            <tr><td>Siren</td><td class="num">(49, &minus;6)</td><td class="num">(96, &minus;25)</td><td class="num">2.8 s</td></tr>
+            <tr><td>Three generations</td><td class="num">(53, 13)</td><td class="num">(110, 9)</td><td class="num">3.0 s</td></tr>
+            <tr><td>Wharf</td><td class="num">(15, &minus;7)</td><td class="num">(83, &minus;17)</td><td class="num">3.0 s</td></tr>
+            <tr><td>Seed specimens</td><td class="num">(41, &minus;38)</td><td class="num">(108, &minus;81)</td><td class="num">2.6 s</td></tr>
+            <tr><td>Greenhouse</td><td class="num">(59, 28)</td><td class="num">(126, 35)</td><td class="num">2.7 s</td></tr>
+            <tr><td>Mosque</td><td class="num">(32, 5)</td><td class="num">(79, 7)</td><td class="num">2.7 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ledger__note">Pyramid search on blurred gradients with NCC: &plusmn;15 at the coarsest level, &plusmn;2 at each level above.</p>
+
+      <p class="fig-label">Fig. 09 &middot; All seventeen plates, aligned</p>
+      <div class="sequence ratio-scan fit-contain" data-sequence>
+        <ol class="filmstrip">
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-cathedral.jpg" alt="Cathedral, aligned."></div><figcaption><span class="plate__label">Cathedral</span><span class="spec">G (5, 2) &middot; R (12, 3)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-monastery.jpg" alt="Monastery, aligned."></div><figcaption><span class="plate__label">Monastery</span><span class="spec">G (&minus;3, 2) &middot; R (3, 2)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-tobolsk.jpg" alt="Tobolsk, aligned."></div><figcaption><span class="plate__label">Tobolsk</span><span class="spec">G (3, 3) &middot; R (6, 3)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-church.jpg" alt="Church, aligned."></div><figcaption><span class="plate__label">Church</span><span class="spec">G (25, 4) &middot; R (59, &minus;4)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-emir.jpg" alt="Emir, aligned."></div><figcaption><span class="plate__label">Emir</span><span class="spec">G (49, 23) &middot; R (107, 40)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-harvesters.jpg" alt="Harvesters, aligned."></div><figcaption><span class="plate__label">Harvesters</span><span class="spec">G (60, 17) &middot; R (124, 14)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-icon.jpg" alt="Icon, aligned."></div><figcaption><span class="plate__label">Icon</span><span class="spec">G (42, 17) &middot; R (91, 22)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-ilemselga.jpg" alt="Ilemselga, aligned."></div><figcaption><span class="plate__label">Ilemselga</span><span class="spec">G (40, 7) &middot; R (131, 11)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-melons.jpg" alt="Melons, aligned."></div><figcaption><span class="plate__label">Melons</span><span class="spec">G (81, 10) &middot; R (178, 13)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-religous_painting.jpg" alt="Religious painting, aligned."></div><figcaption><span class="plate__label">Religious painting</span><span class="spec">G (29, 2) &middot; R (68, 7)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-self_portrait.jpg" alt="Self portrait, aligned."></div><figcaption><span class="plate__label">Self portrait</span><span class="spec">G (79, 29) &middot; R (176, 37)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-siren.jpg" alt="Siren, aligned."></div><figcaption><span class="plate__label">Siren</span><span class="spec">G (49, &minus;6) &middot; R (96, &minus;25)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-three_generations.jpg" alt="Three generations, aligned."></div><figcaption><span class="plate__label">Three generations</span><span class="spec">G (53, 13) &middot; R (110, 9)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-wharf.jpg" alt="Wharf, aligned."></div><figcaption><span class="plate__label">Wharf</span><span class="spec">G (15, &minus;7) &middot; R (83, &minus;17)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-beans.jpg" alt="Seed specimens, aligned."></div><figcaption><span class="plate__label">Seed specimens</span><span class="spec">G (41, &minus;38) &middot; R (108, &minus;81)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-flowers.jpg" alt="Greenhouse, aligned."></div><figcaption><span class="plate__label">Greenhouse</span><span class="spec">G (59, 28) &middot; R (126, 35)</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/aligned-mosque.jpg" alt="Mosque, aligned."></div><figcaption><span class="plate__label">Mosque</span><span class="spec">G (32, 5) &middot; R (79, 7)</span></figcaption></figure></li>
+        </ol>
+      </div>
+      <p class="camera-line">Alignment only. Borders, colour cast and contrast are handled in Parts 07 to 09.</p>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 06 Own plates                                                    -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-6" aria-labelledby="part-6-title">
+      <header class="part__head">
+        <p class="eyebrow">06</p>
+        <h2 class="part__title" id="part-6-title">Three plates of my own</h2>
+      </header>
+
+      <div class="prose">
+        <p>Three more negatives from the Library of Congress: seed specimens in a display case, a greenhouse interior (<em>V oranzherei</em>), and the Yusuf Hamadani mosque and mausoleum at ancient Merv, Turkmenistan. All three align with no change to the method. The seed labels are legible at full resolution. </p>
+      </div>
+
+      <p class="fig-label">Fig. 10 &middot; Aligned and enhanced</p>
+      <div class="pair pair--3">
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/own-beans.jpg" alt="A wooden display case with a grid of compartments full of seeds and beans."></div>
+          <figcaption><span class="plate__label">Seed specimens</span><span class="spec">G (41, &minus;38) &middot; R (108, &minus;81)</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/own-flowers.jpg" alt="Inside a greenhouse: palms, agaves and beds of red and white flowers under glass."></div>
+          <figcaption><span class="plate__label">Greenhouse</span><span class="spec">G (59, 28) &middot; R (126, 35)</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/own-mosque.jpg" alt="Domed mud-brick buildings of the Yusuf Hamadani mosque under a pale sky."></div>
+          <figcaption><span class="plate__label">Mosque, Merv</span><span class="spec">G (32, 5) &middot; R (79, 7)</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 11 &middot; Full resolution, centre of each plate</p>
+      <div class="pair pair--3">
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/own-beans-detail.jpg" alt="Detail of the seed case: the printed Latin labels are legible."></div>
+          <figcaption><span class="plate__label">Seed specimens</span><span class="spec">600 px</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/own-flowers-detail.jpg" alt="Detail of the greenhouse flowers with clean edges."></div>
+          <figcaption><span class="plate__label">Greenhouse</span><span class="spec">600 px</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/own-mosque-detail.jpg" alt="Detail of the mosque's domes, sharp against the sky."></div>
+          <figcaption><span class="plate__label">Mosque</span><span class="spec">600 px</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 07 Cropping                                                      -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-7" aria-labelledby="part-7-title">
+      <header class="part__head">
+        <p class="eyebrow">07</p>
+        <h2 class="part__title" id="part-7-title">Automatic cropping</h2>
+      </header>
+
+      <div class="prose">
+        <p>An aligned image has two kinds of unwanted edge. Rows and columns that <span class="num">np.roll</span> wrapped around are known exactly from the shifts and are removed first. The plate border has to be detected.</p>
+
+        <h3>Row statistics do not separate border from sky</h3>
+        <p>A first rule called a row "border" if at least half its pixels were saturated in some channel, or if the three channels disagreed strongly along it. It kept 40% of the harvesters and cut 687 rows from the top of the church. A blue sky is a row where the channels disagree: the church's sky averages <span class="num">(0.51, 0.58, 0.88)</span> in RGB for three hundred rows. A bright sky is nearly saturated: 48% of each harvesters row is above 0.95 in green, two points under the cutoff.</p>
+
+        <h3>The edge of the border does</h3>
+        <p>A plate border ends at a straight, sharp edge; a sky does not. For each channel and each side, I take the mean intensity of every line over the middle 60% of the other axis, and cut at the innermost place within the outer 10% of the image where that profile jumps by more than 0.1 across six lines. Frame edges jump by 0.4 to 0.99; picture content almost never exceeds 0.1. The tightest cut over the three channels is used. On the Emir's left edge the profile passes a white frame, a colour fringe and a dark unexposed band before the carved door, and the cut lands at column 219. Across the fourteen course plates the rule keeps 79% to 86% of each image.</p>
+        <p>The rule misses a border that fades out instead of stopping. On the self portrait's right edge the blue channel falls from 0.25 to 0.05 over forty columns, about 0.03 per six lines, and a faint strip survives. Lowering the threshold to 0.08 catches it but cuts into the icon and the three generations, so the threshold stays.</p>
+      </div>
+
+      <p class="fig-label">Fig. 12 &middot; First rule in red, final rule in green</p>
+      <div class="pair">
+        <figure class="plate ratio-scan">
+          <div class="plate__well">
+            <img src="media/crop-rules-harvesters.jpg" alt="The harvesters with two rectangles: a red one enclosing only the central 40%, a green one just inside the plate border.">
+          </div>
+          <figcaption><span class="plate__label">Harvesters</span><span class="spec">40% kept &rarr; 84%</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan">
+          <div class="plate__well">
+            <img src="media/crop-rules-church.jpg" alt="The church with two rectangles: the red one starts a fifth of the way down the sky, the green one at the plate edge.">
+          </div>
+          <figcaption><span class="plate__label">Church</span><span class="spec">58% kept &rarr; 86%</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 13 &middot; Two edges at full resolution</p>
+      <div class="pair">
+        <figure class="plate ratio-strip">
+          <div class="plate__well">
+            <img src="media/crop-emir-edge.jpg" alt="The left 500 columns of the Emir: white band, red and yellow fringe, dark band, then the carved door, with the cut line drawn.">
+          </div>
+          <figcaption><span class="plate__label">Emir, left edge</span><span class="spec">cut at column 219</span></figcaption>
+        </figure>
+        <figure class="plate ratio-strip">
+          <div class="plate__well">
+            <img src="media/crop-selfportrait-edge.jpg" alt="The right 500 columns of the self portrait: grass, a faint yellowish strip, the cut line, then a blue and magenta band.">
+          </div>
+          <figcaption><span class="plate__label">Self portrait, right edge</span><span class="spec">a soft fringe survives</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 08 Contrast and white balance                                    -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-8" aria-labelledby="part-8-title">
+      <header class="part__head">
+        <p class="eyebrow">08</p>
+        <h2 class="part__title" id="part-8-title">Contrast and white balance</h2>
+      </header>
+
+      <div class="prose">
+        <p><strong>Contrast.</strong> The scans are flat. I stretch the intensities so the 0.5th percentile of all three channels maps to 0 and the 99.5th to 1. Percentiles rather than the minimum and maximum, so a dust speck does not set the range; one stretch for all channels rather than one per channel, so the colour balance is unchanged. This runs last in the pipeline.</p>
+        <p><strong>White balance.</strong> I estimate the colour of the light, then apply a gain per channel that makes that colour neutral. Gray world estimates the light as the mean of each channel; white patch estimates it as the 99th percentile. Gray world fails whenever the scene is not grey on average, which is common here: a plate of lake and sky is pushed toward the complement of blue, so the church's sky turns yellow-green. White patch handles it, and it also gives a better fit for the colour matrix in Part 09, so it is the default.</p>
+      </div>
+
+      <p class="fig-label">Fig. 14 &middot; The church under gray world and white patch</p>
+      <div class="compare fit-contain" style="--ratio: 1400 / 1249" data-compare hidden>
+        <p class="compare__legend">
+          <span>Gray world</span>
+          <span class="compare__hint">Drag</span>
+          <span>White patch</span>
+        </p>
+        <div class="compare__viewport">
+          <img src="media/wb-whitepatch-church.jpg" alt="">
+          <div class="compare__top"><img src="media/wb-grayworld-church.jpg" alt=""></div>
+          <div class="compare__handle" role="slider" tabindex="0"
+               aria-label="Wipe between the church white balanced by gray world and by white patch"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+        </div>
+      </div>
+      <p class="camera-line">Both cropped and contrast-stretched, no colour matrix, so only the white balance differs</p>
+
+      <p class="fig-label">Fig. 15 &middot; The wharf before and after the contrast stretch</p>
+      <div class="pair">
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/contrast-before-wharf.jpg" alt="The wharf after cropping, white balance and colour matrix, still flat."></div>
+          <figcaption><span class="plate__label">Before</span><span class="spec">cropped, balanced, mapped</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/contrast-after-wharf.jpg" alt="The wharf after the percentile stretch, with full blacks and whites."></div>
+          <figcaption><span class="plate__label">After</span><span class="spec">0.5th &rarr; 0 &middot; 99.5th &rarr; 1</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 09 Colour mapping                                                -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-9" aria-labelledby="part-9-title">
+      <header class="part__head">
+        <p class="eyebrow">09</p>
+        <h2 class="part__title" id="part-9-title">Colour mapping</h2>
+      </header>
+
+      <div class="prose">
+        <p>Prokudin-Gorskii's filters were not the primaries of a modern display, so stacking the exposures as RGB leaves the hues slightly off even after white balance, and a per-channel gain cannot fix a hue. The correction is a 3&times;3 matrix applied to every pixel. There is no ground truth to fit it to, so I use sixteen patches on eight plates whose colour can be guessed: plaster walls, black coats, white blouses and pavements should be neutral; grass and leaves green; sky blue; melons orange; lilacs lilac. Each target keeps the patch's own luminance and only changes its hue, so the matrix corrects colour, not exposure. The patches are sampled from the cropped, white-patch balanced images, the point in the pipeline where the matrix is applied.</p>
+      </div>
+
+      <p class="fig-label">Fig. 16 &middot; The sixteen reference patches</p>
+      <figure class="plate solo solo--wide" style="--ratio: 1248 / 784">
+        <div class="plate__well">
+          <img src="media/colormap-patches.jpg" alt="A four by four grid. Each cell shows an image patch and three swatches: its measured mean colour, the target colour, and the colour after the fitted matrix.">
+        </div>
+        <figcaption>
+          <span class="plate__label">Patch &middot; measured &middot; target &middot; after the fit</span>
+          <span class="spec">16 patches, 8 plates</span>
+        </figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>The least-squares solution mixes the channels more than expected:</p>
+      </div>
+      <div class="formula">
+        \[ M = \begin{bmatrix} \phantom{-}1.144 & -0.464 & \phantom{-}0.230 \\ \phantom{-}0.040 & \phantom{-}1.054 & -0.058 \\ -0.585 & \phantom{-}0.940 & \phantom{-}0.694 \end{bmatrix} \]
+      </div>
+      <div class="prose">
+        <p>The corrected blue is blue plus most of the green minus over half the red, which says the blue exposure recorded much of what a display calls green. Nine parameters fitted to sixteen points can overfit, so the number that matters is the held-out one. The mean RGB distance from the patches to their targets is 0.103 with no correction and 0.070 after the fit; refitting with each patch held out in turn and scoring the held-out patch gives 0.085. The matrix helps, and less than the training number suggests. Plates with no patch in the fit show no artefacts, though skies lean slightly cyan.</p>
+      </div>
+
+      <p class="fig-label">Fig. 17 &middot; Ilemselga, which had no patch in the fit</p>
+      <div class="pair">
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/colormap-before-ilemselga.jpg" alt="Ilemselga after white patch balance only: the sky is violet."></div>
+          <figcaption><span class="plate__label">White patch only</span><span class="spec">violet sky</span></figcaption>
+        </figure>
+        <figure class="plate ratio-scan fit-contain">
+          <div class="plate__well"><img src="media/colormap-after-ilemselga.jpg" alt="Ilemselga after the colour matrix: the sky is blue and the church wall is white."></div>
+          <figcaption><span class="plate__label">With the matrix</span><span class="spec">blue sky, white wall</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 18 &middot; The pipeline, one step at a time</p>
+      <div class="sequence ratio-scan fit-contain" data-sequence>
+        <ol class="filmstrip">
+        <li><figure class="plate"><div class="plate__well"><img src="media/steps-self_portrait-0.jpg" alt="Self portrait, aligned only."></div><figcaption><span class="plate__label">Aligned</span><span class="spec">0</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/steps-self_portrait-1.jpg" alt="Self portrait after cropping."></div><figcaption><span class="plate__label">Cropped</span><span class="spec">1</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/steps-self_portrait-2.jpg" alt="Self portrait after white balance."></div><figcaption><span class="plate__label">White balanced</span><span class="spec">2</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/steps-self_portrait-3.jpg" alt="Self portrait after the colour matrix."></div><figcaption><span class="plate__label">Colour matrix</span><span class="spec">3</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/steps-self_portrait-4.jpg" alt="Self portrait after the contrast stretch."></div><figcaption><span class="plate__label">Contrast</span><span class="spec">4</span></figcaption></figure></li>
+        </ol>
+      </div>
+      <p class="camera-line">Crop first so the borders do not skew the colour statistics; contrast last so the output uses the full range</p>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 10 Limitations and final results                                 -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-10" aria-labelledby="part-10-title">
+      <header class="part__head">
+        <p class="eyebrow">10</p>
+        <h2 class="part__title" id="part-10-title">Limitations and final results</h2>
+      </header>
+
+      <div class="prose">
+        <p>The crop leaves a thin strip where a border fades gradually, and cannot follow the ragged emulsion damage on the greenhouse and seed plates. Gray world remains an option and remains wrong on any plate dominated by one colour. The colour matrix leans skies toward cyan, and its off-diagonal terms are larger than sixteen patches can justify; more patches or a fit regularised toward the identity would help, and both need better target colours than guesses. The alignment itself is sharp on all seventeen plates; the next step would be to search over a small rotation and scale as well.</p>
+      </div>
+
+      <p class="fig-label">Fig. 19 &middot; The fourteen course plates, finished</p>
+      <div class="sequence ratio-scan fit-contain" data-sequence>
+        <ol class="filmstrip">
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-cathedral.jpg" alt="Cathedral, finished."></div><figcaption><span class="plate__label">Cathedral</span><span class="spec">jpg</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-monastery.jpg" alt="Monastery, finished."></div><figcaption><span class="plate__label">Monastery</span><span class="spec">jpg</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-tobolsk.jpg" alt="Tobolsk, finished."></div><figcaption><span class="plate__label">Tobolsk</span><span class="spec">jpg</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-church.jpg" alt="Church, finished."></div><figcaption><span class="plate__label">Church</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-emir.jpg" alt="Emir, finished."></div><figcaption><span class="plate__label">Emir</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-harvesters.jpg" alt="Harvesters, finished."></div><figcaption><span class="plate__label">Harvesters</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-icon.jpg" alt="Icon, finished."></div><figcaption><span class="plate__label">Icon</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-ilemselga.jpg" alt="Ilemselga, finished."></div><figcaption><span class="plate__label">Ilemselga</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-melons.jpg" alt="Melons, finished."></div><figcaption><span class="plate__label">Melons</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-religous_painting.jpg" alt="Religious painting, finished."></div><figcaption><span class="plate__label">Religious painting</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-self_portrait.jpg" alt="Self portrait, finished."></div><figcaption><span class="plate__label">Self portrait</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-siren.jpg" alt="Siren, finished."></div><figcaption><span class="plate__label">Siren</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-three_generations.jpg" alt="Three generations, finished."></div><figcaption><span class="plate__label">Three generations</span><span class="spec">tif</span></figcaption></figure></li>
+        <li><figure class="plate"><div class="plate__well"><img src="media/final-wharf.jpg" alt="Wharf, finished."></div><figcaption><span class="plate__label">Wharf</span><span class="spec">tif</span></figcaption></figure></li>
+        </ol>
+      </div>
+      <p class="camera-line">Aligned on blurred gradients &middot; cropped &middot; white patch &middot; colour matrix &middot; percentile stretch</p>
+
+      <p class="part__desc">Scans from the Prokudin-Gorskii collection, Library of Congress Prints and Photographs Division.</p>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <span><a href="../">&larr; All projects</a></span>
+    <span>Yong Tze Fon Timothy &middot; CS180 Project 1</span>
+    <span><a href="https://azhicles.github.io/1/">azhicles.github.io/1/</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
