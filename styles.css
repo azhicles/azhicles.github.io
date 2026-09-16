@@ -275,6 +275,12 @@ button { font: inherit; }
   background: var(--rule);
 }
 
+/* Give a figure label room to breathe after a block of explanation. The
+   label remains close to its image, but no longer hugs the last text line. */
+.prose + .fig-label {
+  margin-top: clamp(1.6rem, 2.5vw, 2.25rem);
+}
+
 /* Figures sit centred, capped so a tall portrait frame does not run past
    one screen. */
 .sequence,
@@ -735,7 +741,7 @@ button { font: inherit; }
   /* Both: never split the eyebrow from its title, and never leave the
      pair stranded at the foot of a page. */
   .part__head { break-inside: avoid; break-after: avoid; }
-  .fig-label { break-after: avoid; margin-bottom: .5rem; }
+  .fig-label { break-after: avoid; margin: .5rem 0; }
 
   /* On paper the contact sheet is the whole figure, so let it use the
      full page rather than the centred on screen cap. */
@@ -954,6 +960,73 @@ button { font: inherit; }
 @media (max-width: 620px) {
   .pair,
   .pair--3 { grid-template-columns: 1fr; }
+}
+
+/* Project 1 is a long-form case study. Keep its visual scale subordinate to
+   the writing column instead of letting every figure expand to the full sheet.
+   These overrides are scoped so the shared project index keeps its original
+   proportions. */
+.project-page--1 .sheet {
+  --sheet: 68rem;
+  --measure: 58ch;
+  padding-inline: clamp(1.1rem, 4vw, 3rem);
+}
+
+.project-page--1 .masthead {
+  max-width: 60rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.project-page--1 .masthead__meta {
+  text-align: left;
+}
+
+.project-page--1 .masthead__title {
+  max-width: 15ch;
+  margin-inline: auto;
+  font-size: clamp(2.45rem, 1.8rem + 4.4vw, 5.15rem);
+}
+
+.project-page--1 .byline,
+.project-page--1 .dateline {
+  margin-inline: auto;
+}
+
+.project-page--1 .prose,
+.project-page--1 .formula,
+.project-page--1 .contents {
+  max-width: min(var(--measure), 100%);
+}
+
+.project-page--1 .pair {
+  max-width: 52rem;
+  gap: clamp(.75rem, 2vw, 1.25rem);
+}
+
+.project-page--1 .pair--3 {
+  max-width: 58rem;
+}
+
+.project-page--1 .plate.solo--wide,
+.project-page--1 .sequence,
+.project-page--1 .ledger-wrap,
+.project-page--1 .ledger__note {
+  max-width: 58rem;
+}
+
+@media (max-width: 700px) {
+  .project-page--1 .masthead__title {
+    max-width: 12ch;
+  }
+
+  .project-page--1 .masthead__meta {
+    justify-content: center;
+  }
+
+  .project-page--1 .prose {
+    max-width: 37rem;
+  }
 }
 
 /* The plates on this project are not all the same shape, so a sequence
