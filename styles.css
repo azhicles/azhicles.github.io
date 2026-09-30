@@ -962,69 +962,87 @@ button { font: inherit; }
   .pair--3 { grid-template-columns: 1fr; }
 }
 
-/* Project 1 is a long-form case study. Keep its visual scale subordinate to
+/* Projects 1 and 2 are long-form case studies. Keep their visual scale subordinate to
    the writing column instead of letting every figure expand to the full sheet.
    These overrides are scoped so the shared project index keeps its original
    proportions. */
-.project-page--1 .sheet {
+.project-page--1 .sheet,
+.project-page--2 .sheet {
   --sheet: 68rem;
   --measure: 58ch;
   padding-inline: clamp(1.1rem, 4vw, 3rem);
 }
 
-.project-page--1 .masthead {
+.project-page--1 .masthead,
+.project-page--2 .masthead {
   max-width: 60rem;
   margin-inline: auto;
   text-align: center;
 }
 
-.project-page--1 .masthead__meta {
+.project-page--1 .masthead__meta,
+.project-page--2 .masthead__meta {
   text-align: left;
 }
 
-.project-page--1 .masthead__title {
+.project-page--1 .masthead__title,
+.project-page--2 .masthead__title {
   max-width: 15ch;
   margin-inline: auto;
   font-size: clamp(2.45rem, 1.8rem + 4.4vw, 5.15rem);
 }
 
 .project-page--1 .byline,
-.project-page--1 .dateline {
+.project-page--2 .byline,
+.project-page--1 .dateline,
+.project-page--2 .dateline {
   margin-inline: auto;
 }
 
 .project-page--1 .prose,
+.project-page--2 .prose,
 .project-page--1 .formula,
-.project-page--1 .contents {
+.project-page--2 .formula,
+.project-page--1 .contents,
+.project-page--2 .contents {
   max-width: min(var(--measure), 100%);
 }
 
-.project-page--1 .pair {
+.project-page--1 .pair,
+.project-page--2 .pair {
   max-width: 52rem;
   gap: clamp(.75rem, 2vw, 1.25rem);
 }
 
-.project-page--1 .pair--3 {
+.project-page--1 .pair--3,
+.project-page--2 .pair--3 {
   max-width: 58rem;
 }
 
 .project-page--1 .plate.solo--wide,
+.project-page--2 .plate.solo--wide,
 .project-page--1 .sequence,
+.project-page--2 .sequence,
 .project-page--1 .ledger-wrap,
-.project-page--1 .ledger__note {
+.project-page--2 .ledger-wrap,
+.project-page--1 .ledger__note,
+.project-page--2 .ledger__note {
   max-width: 58rem;
 }
 
 @media (max-width: 700px) {
-  .project-page--1 .masthead__title {
+  .project-page--1 .masthead__title,
+  .project-page--2 .masthead__title {
     max-width: 12ch;
   }
 
-  .project-page--1 .masthead__meta {
+  .project-page--1 .masthead__meta,
+  .project-page--2 .masthead__meta {
     justify-content: center;
   }
 
-  .project-page--1 .prose {
+  .project-page--1 .prose,
+  .project-page--2 .prose {
     max-width: 37rem;
   }
 }
@@ -1056,4 +1074,72 @@ button { font: inherit; }
   .pair .plate { break-inside: avoid; }
   .contents ol { columns: 2; }
   .prose h3 { break-after: avoid; }
+}
+
+/* Code listing. Set on the same sunken stock as the formula cards, in the
+   mono face, and scrolls sideways on a phone instead of wrapping. */
+.codeblock {
+  max-width: min(46rem, 100%);
+  margin: 1.2rem auto 1.7rem;
+  padding: .9rem 1.2rem;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--olive);
+  tab-size: 4;
+}
+.codeblock code { font: inherit; color: inherit; white-space: pre; }
+
+/* A figure that is not ready yet: the placeholder hatching on its own,
+   with no image, so the script never removes it. */
+.plate--pending .plate__well { border-style: dashed; }
+
+@media print {
+  .codeblock { break-inside: avoid; }
+}
+
+/* Greek letters keep their case inside the uppercase mono labels, so
+   sigma does not turn into a summation sign. */
+.nocase { text-transform: none; }
+
+/* On project 2 every subheading follows other content, so it keeps its
+   space above even when it opens a new prose block. */
+.project-page--2 .prose h3:first-child { margin-top: 2.4rem; }
+
+/* Project 2 is figure-heavy, so it runs more compact: figures share rows,
+   and single figures are capped well below the sheet width. */
+.pair--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 620px) {
+  .pair--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* A row of figures with different shapes. Each figure's flex-grow is its
+   aspect ratio (width / height, set inline as --w), so every image in the
+   row comes out the same height. */
+.strip {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(.6rem, 1.5vw, 1rem);
+  max-width: 58rem;
+  margin: 0 auto 1.25rem;
+}
+.strip > .plate { flex: var(--w, 1) 1 0; min-width: 0; margin: 0; }
+.strip--narrow { max-width: 44rem; }
+@media (max-width: 620px) {
+  .strip { flex-wrap: wrap; }
+  .strip > .plate { flex-basis: 100%; }
+}
+
+.project-page--2 .pair { max-width: 46rem; margin-bottom: 1.25rem; }
+.project-page--2 .pair--3,
+.project-page--2 .pair--4 { max-width: 54rem; }
+.project-page--2 .plate.solo { max-width: 38rem; margin-bottom: 1.25rem; }
+.project-page--2 .plate.solo--wide { max-width: 52rem; }
+.project-page--2 .plate.solo--narrow { max-width: 22rem; }
+
+@media print {
+  .strip > .plate { break-inside: avoid; }
 }

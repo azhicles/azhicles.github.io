@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project 2 &middot; Fun with Filters and Frequencies &middot; Yong Tze Fon Timothy</title>
+<meta name="description" content="CS180 Project 2: convolution from scratch, edge detection with finite differences and derivative of Gaussian filters, unsharp masking, hybrid images, Gaussian and Laplacian stacks, and multiresolution blending.">
+<meta name="author" content="Yong Tze Fon Timothy">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23F4F1E8'/><circle cx='16' cy='16' r='8' fill='none' stroke='%233F4A2E' stroke-width='1.8'/><circle cx='16' cy='16' r='2.6' fill='%233F4A2E'/><path d='M16 8v3M16 21v3M8 16h3M21 16h3' stroke='%238A5A3C' stroke-width='1.6'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" defer
+        onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+<script src="../scripts.js" defer></script>
+</head>
+
+<body class="project-page project-page--2">
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="tocnav" aria-label="Sections">
+  <a href="#part-1" aria-current="false">01</a>
+  <a href="#part-2" aria-current="false">02</a>
+  <a href="#part-3" aria-current="false">03</a>
+  <a href="#part-4" aria-current="false">04</a>
+  <a href="#part-5" aria-current="false">05</a>
+  <a href="#part-6" aria-current="false">06</a>
+  <a href="#part-7" aria-current="false">07</a>
+  <a href="#part-8" aria-current="false">08</a>
+  <a href="#part-9" aria-current="false">09</a>
+</nav>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <p class="masthead__meta">
+      <a href="../">&larr; All projects</a>
+      <span class="hairline" aria-hidden="true"></span>
+      <span>CS180 &middot; FA26</span>
+    </p>
+
+    <h1 class="masthead__title">Fun with Filters and Frequencies</h1>
+
+    <p class="byline">Yong Tze Fon Timothy</p>
+    <p class="dateline">Project 2 &middot; Convolution, edges, sharpening, hybrid images and blending &middot; CS180: Intro to Computer Vision &amp; Computational Photography &middot; UC Berkeley &middot; Fall 2026</p>
+    <p class="dateline"><a href="https://cal-cs180.github.io/fa26/hw/proj2/index.html">Assignment brief</a></p>
+  </header>
+
+  <main id="main">
+
+    <div class="prose">
+      <p>The first half of this project is about filters in the image domain: writing convolution by hand, then using finite differences and Gaussians to find edges. The second half moves to frequencies. A Gaussian keeps the low frequencies and the image minus its blur keeps the high ones, and those two pieces are enough to sharpen photos, build images that change with viewing distance, and blend two photos without a visible seam.</p>
+    </div>
+
+    <nav class="contents" aria-label="Contents">
+      <ol>
+        <li><a href="#part-1"><span class="contents__num">01</span><span>Convolution from scratch</span></a></li>
+        <li><a href="#part-2"><span class="contents__num">02</span><span>Finite difference operator</span></a></li>
+        <li><a href="#part-3"><span class="contents__num">03</span><span>Derivative of Gaussian</span></a></li>
+        <li><a href="#part-4"><span class="contents__num">04</span><span>Gradient orientation</span></a></li>
+        <li><a href="#part-5"><span class="contents__num">05</span><span>Sharpening</span></a></li>
+        <li><a href="#part-6"><span class="contents__num">06</span><span>Hybrid images</span></a></li>
+        <li><a href="#part-7"><span class="contents__num">07</span><span>Gaussian and Laplacian stacks</span></a></li>
+        <li><a href="#part-8"><span class="contents__num">08</span><span>Multiresolution blending</span></a></li>
+        <li><a href="#part-9"><span class="contents__num">09</span><span>What I learned</span></a></li>
+      </ol>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- 01 Convolution from scratch (1.1)                                -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-1" aria-labelledby="part-1-title">
+      <header class="part__head">
+        <p class="eyebrow">01</p>
+        <h2 class="part__title" id="part-1-title">Convolution from scratch</h2>
+      </header>
+
+      <div class="prose">
+        <p>Both versions flip the kernel, zero-pad the image by <span class="num">k&minus;1</span> on every side, compute the <span class="num">full</span> output and crop it. For <span class="num">same</span>, the window starts at <span class="num">(k&minus;1)//2</span>, which is where scipy puts it. With an even kernel like the two-tap <span class="num">D_x</span>, a centred crop would be off by one pixel.</p>
+      </div>
+
+<pre class="codeblock"><code>def pad_zeros(img, kh, kw):
+    H, W = img.shape
+    out = np.zeros((H + 2 * (kh - 1), W + 2 * (kw - 1)))
+    out[kh - 1:kh - 1 + H, kw - 1:kw - 1 + W] = img
+    return out
+
+def crop_mode(full, img_shape, k_shape, mode):
+    (H, W), (kh, kw) = img_shape, k_shape
+    if mode == "full":
+        return full
+    r0, c0 = (kh - 1) // 2, (kw - 1) // 2          # "same", as scipy centres it
+    return full[r0:r0 + H, c0:c0 + W]
+
+def conv_four_loops(img, kernel, mode="same"):
+    k = np.flipud(np.fliplr(kernel))               # convolution, not correlation
+    kh, kw = k.shape
+    padded = pad_zeros(img, kh, kw)
+    full = np.zeros((padded.shape[0] - kh + 1, padded.shape[1] - kw + 1))
+    for i in range(full.shape[0]):
+        for j in range(full.shape[1]):
+            acc = 0.0
+            for u in range(kh):
+                for v in range(kw):
+                    acc += k[u, v] * padded[i + u, j + v]
+            full[i, j] = acc
+    return crop_mode(full, img.shape, (kh, kw), mode)
+
+def conv_two_loops(img, kernel, mode="same"):
+    k = np.flipud(np.fliplr(kernel))
+    kh, kw = k.shape
+    padded = pad_zeros(img, kh, kw)
+    full = np.zeros((padded.shape[0] - kh + 1, padded.shape[1] - kw + 1))
+    for i in range(full.shape[0]):
+        for j in range(full.shape[1]):
+            full[i, j] = np.sum(padded[i:i + kh, j:j + kw] * k)
+    return crop_mode(full, img.shape, (kh, kw), mode)</code></pre>
+
+      <div class="prose">
+        <p>I checked both against <span class="num">scipy.signal.convolve2d</span> on my portrait, downscaled to 300 &times; 225. The box filter and the difference operators are symmetric or antisymmetric, so they would hide a missing flip; a random 5 &times; 3 kernel catches it.</p>
+      </div>
+
+      <div class="ledger-wrap">
+        <table class="ledger">
+          <thead>
+            <tr><th>Kernel</th><th class="num">Max diff, 4 loops</th><th class="num">Max diff, 2 loops</th><th class="num">4 loops</th><th class="num">2 loops</th><th class="num">scipy</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Box 9 &times; 9</td><td class="num">8.9e-16</td><td class="num">4.4e-16</td><td class="num">1.26 s</td><td class="num">0.19 s</td><td class="num">6.6 ms</td></tr>
+            <tr><td>D<sub>x</sub></td><td class="num">0</td><td class="num">0</td><td class="num">0.04 s</td><td class="num">0.16 s</td><td class="num">0.6 ms</td></tr>
+            <tr><td>D<sub>y</sub></td><td class="num">0</td><td class="num">0</td><td class="num">0.05 s</td><td class="num">0.17 s</td><td class="num">0.9 ms</td></tr>
+            <tr><td>Random 5 &times; 3</td><td class="num">2.2e-15</td><td class="num">1.8e-15</td><td class="num">0.25 s</td><td class="num">0.17 s</td><td class="num">2.2 ms</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ledger__note">Mode <span class="num">same</span>; <span class="num">full</span> gives the same differences. Timings from one run.</p>
+
+      <div class="prose">
+        <p>Both match scipy to rounding error. Two loops beat four on the box filter (81 multiplies per pixel move into numpy), but lose on the two-tap operators, where one numpy call per pixel costs more than two Python iterations. Scipy is 30 to 300 times faster than either.</p>
+      </div>
+
+      <p class="fig-label">Fig. 01 &middot; My portrait, a 9 &times; 9 box filter, and the two difference operators</p>
+      <div class="pair pair--4">
+        <figure class="plate" style="--ratio: 225 / 300">
+          <div class="plate__well"><img src="media/p1-portrait.jpg" alt="Grayscale self-portrait."></div>
+          <figcaption><span class="plate__label">Grayscale portrait</span><span class="spec">300 &times; 225</span></figcaption>
+        </figure>
+        <figure class="plate" style="--ratio: 225 / 300">
+          <div class="plate__well"><img src="media/p1-box.jpg" alt="The portrait blurred by a 9 by 9 box filter, with a dark frame at the border."></div>
+          <figcaption><span class="plate__label">Box 9 &times; 9</span><span class="spec">dark frame from zero padding</span></figcaption>
+        </figure>
+        <figure class="plate" style="--ratio: 225 / 300">
+          <div class="plate__well"><img src="media/p1-dx.jpg" alt="Horizontal derivative of the portrait: vertical edges light up."></div>
+          <figcaption><span class="plate__label">D<sub>x</sub></span><span class="spec">vertical edges</span></figcaption>
+        </figure>
+        <figure class="plate" style="--ratio: 225 / 300">
+          <div class="plate__well"><img src="media/p1-dy.jpg" alt="Vertical derivative of the portrait: horizontal edges and the sweater's knit rows light up."></div>
+          <figcaption><span class="plate__label">D<sub>y</sub></span><span class="spec">horizontal edges</span></figcaption>
+        </figure>
+      </div>
+      <div class="prose">
+        <p>In the derivatives mid-grey is zero. <span class="num">D_x</span> picks out the sides of my face, ears and neck; <span class="num">D_y</span> picks out the eyebrows, eyes, lips and the neckline, and the horizontal knit rows of the sweater.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 02 Finite difference operator (1.2)                              -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-2" aria-labelledby="part-2-title">
+      <header class="part__head">
+        <p class="eyebrow">02</p>
+        <h2 class="part__title" id="part-2-title">Finite difference operator</h2>
+      </header>
+
+      <div class="prose">
+        <p>Convolving the cameraman with <span class="num">D_x = [1, &minus;1]</span> and its transpose gives the two partial derivatives. The gradient magnitude combines them, and a threshold turns it into an edge map.</p>
+      </div>
+      <div class="formula">
+        \[ \lVert \nabla I \rVert = \sqrt{(I * D_x)^2 + (I * D_y)^2} \]
+      </div>
+
+      <p class="fig-label">Fig. 02 &middot; Partial derivatives, magnitude and edges</p>
+      <div class="pair pair--4">
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p2-dx.jpg" alt="Cameraman convolved with D_x."></div>
+          <figcaption><span class="plate__label"><span class="nocase">&part;</span>I / <span class="nocase">&part;</span>x</span><span class="spec">grey = 0</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p2-dy.jpg" alt="Cameraman convolved with D_y."></div>
+          <figcaption><span class="plate__label"><span class="nocase">&part;</span>I / <span class="nocase">&part;</span>y</span><span class="spec">grey = 0</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p2-mag.jpg" alt="Gradient magnitude of the cameraman."></div>
+          <figcaption><span class="plate__label">Gradient magnitude</span><span class="spec">max 0.95</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p2-edges.png" alt="Binary edge map of the cameraman at threshold 0.30."></div>
+          <figcaption><span class="plate__label">Edges</span><span class="spec">t = 0.30</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 03 &middot; Choosing the threshold</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 440">
+        <div class="plate__well"><img src="media/p2-sweep.png" alt="Edge maps at thresholds 0.1, 0.2, 0.3 and 0.4."></div>
+        <figcaption><span class="plate__label">t = 0.10, 0.20, 0.30, 0.40</span><span class="spec">noise vs broken edges</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>At 0.10 the grass becomes white speckle; at 0.40 the tripod legs and the back of the coat break apart. I chose <strong>t = 0.30</strong>, the lowest value where the grass mostly disappears (2.5% of pixels marked as edge). The thin frame is real: this copy of the image has a one-pixel white border.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 03 Derivative of Gaussian (1.3)                                  -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-3" aria-labelledby="part-3-title">
+      <header class="part__head">
+        <p class="eyebrow">03</p>
+        <h2 class="part__title" id="part-3-title">Derivative of Gaussian</h2>
+      </header>
+
+      <div class="prose">
+        <p>The grass noise is high frequency, so blurring first should remove it. I built a 13 &times; 13 Gaussian with &sigma; = 2 as the outer product of <span class="num">cv2.getGaussianKernel</span> with itself, blurred the image, and repeated 1.2. Then I did it the other way round: convolve <span class="num">G</span> with <span class="num">D_x</span> and <span class="num">D_y</span> once to get derivative of Gaussian filters, and apply those to the original.</p>
+      </div>
+
+      <p class="fig-label">Fig. 04 &middot; Blur, then differentiate</p>
+      <div class="pair pair--3">
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p3-blurred.jpg" alt="Cameraman blurred by the Gaussian."></div>
+          <figcaption><span class="plate__label">Blurred</span><span class="spec"><span class="nocase">&sigma;</span> = 2</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p3-mag.jpg" alt="Gradient magnitude of the blurred cameraman."></div>
+          <figcaption><span class="plate__label">Magnitude</span><span class="spec">max 0.18</span></figcaption>
+        </figure>
+        <figure class="plate ratio-square">
+          <div class="plate__well"><img src="media/p3-edges.png" alt="Edge map of the blurred cameraman at threshold 0.06."></div>
+          <figcaption><span class="plate__label">Edges</span><span class="spec">t = 0.06</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 05 &middot; The DoG filters, and one filter vs two steps</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 3; --ratio: 1440 / 480">
+          <div class="plate__well"><img src="media/p3-dog-filters.png" alt="The Gaussian and the two derivative of Gaussian filters, each a positive and a negative lobe."></div>
+          <figcaption><span class="plate__label">G, G * D<sub>x</sub>, G * D<sub>y</sub></span><span class="spec">13 &times; 14 and 14 &times; 13</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 1; --ratio: 1 / 1">
+          <div class="plate__well"><img src="media/p3-a-vs-b.png" alt="Magnitude and edges from blur-then-differentiate beside the same from the DoG filters. They are identical."></div>
+          <figcaption><span class="plate__label">Blur then D &middot; DoG</span><span class="spec">max diff 9e-16</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <p>Convolution is associative, so both routes agree to floating point rounding (ignoring the border, where they pad differently).</p>
+      </div>
+
+      <p class="fig-label">Fig. 06 &middot; Threshold for the smoothed gradient</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 440">
+        <div class="plate__well"><img src="media/p3-sweep.png" alt="DoG edge maps at thresholds 0.04, 0.06, 0.08 and 0.10."></div>
+        <figcaption><span class="plate__label">t = 0.04, 0.06, 0.08, 0.10</span><span class="spec">chose 0.06</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h3>What changed</h3>
+        <ul>
+          <li>Less noise. Relative to each map's maximum, finite differences at 21% still leave grass noise; the DoG at 22% leaves the grass clean.</li>
+          <li>Thicker, continuous edges. Outlines are several pixels wide and run unbroken around the head, shoulder and tripod, where 1.2 was ragged.</li>
+          <li>Fine detail is lost. The camera's knobs and the thin lines of the distant buildings are weaker or gone.</li>
+          <li>Lower threshold. Blurring spreads each edge, so the magnitudes shrink (max 0.95 to 0.18) and t drops from 0.30 to 0.06.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 04 Gradient orientation (B&W)                                    -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-4" aria-labelledby="part-4-title">
+      <header class="part__head">
+        <p class="eyebrow">04</p>
+        <h2 class="part__title" id="part-4-title">Gradient orientation</h2>
+      </header>
+
+      <div class="prose">
+        <p>Bells and whistles. From the DoG gradients I computed <span class="num">&theta; = arctan2(&minus;&part;y, &part;x)</span>; the minus sign makes &theta; = &pi;/2 point up. Orientation wraps around, so it needs a cyclic colour map. In the HSV version the hue is &theta; and the brightness is the gradient magnitude, which hides the flat areas where &theta; is meaningless.</p>
+      </div>
+
+      <p class="fig-label">Fig. 07 &middot; Orientation, alone and weighted by strength</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 2.17; --ratio: 1430 / 660">
+          <div class="plate__well"><img src="media/p4-orientation.jpg" alt="Left: orientation in the cyclic twilight colour map, noisy everywhere. Right: HSV image where only edges are coloured."></div>
+          <figcaption><span class="plate__label">twilight &middot; HSV, hue = <span class="nocase">&theta;</span>, value = |<span class="nocase">&nabla;</span>I|</span><span class="spec">cameraman</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 0.6; --ratio: 1 / 1">
+          <div class="plate__well"><img src="media/p4-wheel.png" alt="Colour wheel: hue gives the direction of the gradient, brightness its strength."></div>
+          <figcaption><span class="plate__label">Legend</span><span class="spec">hue = direction</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <p>The two sides of each tripod leg come out in opposite colours, because the gradient points from dark to bright and flips across a thin dark bar. Along the back of the coat the hue drifts from magenta to yellow as the outline curves.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 05 Sharpening (2.1)                                              -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-5" aria-labelledby="part-5-title">
+      <header class="part__head">
+        <p class="eyebrow">05</p>
+        <h2 class="part__title" id="part-5-title">Sharpening</h2>
+      </header>
+
+      <div class="prose">
+        <p>A Gaussian keeps the low frequencies, so <span class="num">f &minus; f * G</span> is the high frequencies. Adding more of them back makes an image look sharper, and because convolution is linear the whole thing is one filter, the unsharp mask:</p>
+      </div>
+      <div class="formula">
+        \[ f + \alpha\,(f - f * G) \;=\; f * \big((1 + \alpha)\,\delta - \alpha\,G\big) \]
+      </div>
+      <div class="prose">
+        <p>It is a tall centre tap with a shallow negative Gaussian around it, summing to 1, so flat regions are untouched. With G at 13 &times; 13, &sigma; = 2, the single filter matches the two-step version to 1.8e-15.</p>
+      </div>
+
+      <p class="fig-label">Fig. 08 &middot; The unsharp mask filter</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1540 / 440">
+        <div class="plate__well"><img src="media/p5-unsharp-filter.png" alt="The Gaussian, the unsharp mask kernel, and its centre row zoomed to show the negative surround."></div>
+        <figcaption><span class="plate__label">G &middot; (1 + <span class="nocase">&alpha;</span>)<span class="nocase">&delta;</span> &minus; <span class="nocase">&alpha;</span>G &middot; centre row</span><span class="spec"><span class="nocase">&alpha;</span> = 1, centre tap 1.96</span></figcaption>
+      </figure>
+
+      <p class="fig-label">Fig. 09 &middot; Taj Mahal: original and sharpened</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 306">
+        <div class="plate__well"><img src="media/p5-taj-summary.jpg" alt="Original, blurred, high frequencies, and sharpened at alpha 0.5, 1 and 2."></div>
+        <figcaption><span class="plate__label">Original, blur, f &minus; f*G, <span class="nocase">&alpha;</span> = 0.5, 1, 2</span><span class="spec">300 &times; 300</span></figcaption>
+      </figure>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 419">
+        <div class="plate__well"><img src="media/p5-taj-crop.jpg" alt="Close-up of the dome: at alpha 2 a bright rim and a dark band in the sky appear along the dome's edge."></div>
+        <figcaption><span class="plate__label">The dome, original and <span class="nocase">&alpha;</span> = 0.5, 1, 2</span><span class="spec">halo at <span class="nocase">&alpha;</span> = 2</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>At &alpha; = 0.5 and 1 the marble and the carvings above the arch get crisper without looking processed. At &alpha; = 2 the filter overshoots on both sides of every edge: the dome gets a bright rim, the sky next to it a dark band, and the JPEG noise is amplified too. &alpha; = 1 looks best.</p>
+      </div>
+
+      <p class="fig-label">Fig. 10 &middot; A photo of my own: the windmill</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 306">
+        <div class="plate__well"><img src="media/p5-windmill-summary.jpg" alt="Windmill: original, blurred, high frequencies, and sharpened at alpha 0.5, 1 and 2."></div>
+        <figcaption><span class="plate__label">Original, blur, f &minus; f*G, <span class="nocase">&alpha;</span> = 0.5, 1, 2</span><span class="spec">1280 &times; 853</span></figcaption>
+      </figure>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 419">
+        <div class="plate__well"><img src="media/p5-windmill-crop.jpg" alt="Close-up of the tower lattice at each alpha."></div>
+        <figcaption><span class="plate__label">The tower, original and <span class="nocase">&alpha;</span> = 0.5, 1, 2</span><span class="spec">grain at <span class="nocase">&alpha;</span> = 2</span></figcaption>
+      </figure>
+
+      <div class="prose">
+        <h3>Blur a sharp photo, then sharpen it back</h3>
+        <p>To evaluate the method I blurred the windmill with the same Gaussian and ran the unsharp mask on the blurred copy.</p>
+      </div>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 305">
+        <div class="plate__well"><img src="media/p5-eval-crop.jpg" alt="Close-up of the windmill wheel: blades separate again after sharpening but the spokes and rim stay smeared."></div>
+        <figcaption><span class="plate__label">The wheel: original, blurred, re-sharpened <span class="nocase">&alpha;</span> = 1, 2, 4</span><span class="spec">close-up</span></figcaption>
+      </figure>
+
+      <div class="ledger-wrap">
+        <table class="ledger">
+          <thead><tr><th>Image</th><th class="num">PSNR vs original</th></tr></thead>
+          <tbody>
+            <tr><td>Blurred</td><td class="num">28.29 dB</td></tr>
+            <tr><td>Re-sharpened, &alpha; = 1</td><td class="num">29.79 dB</td></tr>
+            <tr><td>Re-sharpened, &alpha; = 2</td><td class="num">30.51 dB</td></tr>
+            <tr><td>Re-sharpened, &alpha; = 4</td><td class="num">28.95 dB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="prose">
+        <p>Sharpening moves the image back toward the original, but only partway: PSNR peaks at &alpha; = 2, then drops as overshoot costs more than it recovers. The blades separate again and the tail vane gets a firm outline, but the thin rim, the spokes and the hub stay smeared, and at &alpha; = 4 a dark ring appears in the sky around the wheel. The blur removed the finest frequencies outright. Unsharp masking can only amplify what the blur weakened, so it makes surviving edges look sharper but cannot bring back lost detail.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 06 Hybrid images (2.2)                                           -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-6" aria-labelledby="part-6-title">
+      <header class="part__head">
+        <p class="eyebrow">06</p>
+        <h2 class="part__title" id="part-6-title">Hybrid images</h2>
+      </header>
+
+      <div class="prose">
+        <p>A hybrid image (Oliva, Torralba and Schyns, 2006) adds the low frequencies of one image to the high frequencies of another. Up close the fine detail dominates; from far away, or small, only the low frequencies are left. The low-pass is a Gaussian, the high-pass is the impulse minus a Gaussian, and I scale the high-pass by a gain <span class="num">k</span> when one image has much more contrast than the other.</p>
+      </div>
+<pre class="codeblock"><code>def hybrid_image(im_high, im_low, sigma_high, sigma_low, high_gain=1.0):
+    high = high_gain * (im_high - blur(im_high, sigma_high))   # (delta - G)
+    low = blur(im_low, sigma_low)                              # G
+    return low + high</code></pre>
+      <div class="prose">
+        <p>I use the frequency where each Gaussian's response falls to one half as its cutoff. Images are aligned on two points with the provided code, which I changed to accept saved points, and then cropped to the region where both aligned images have real pixels, so padding and rotation edges don't turn into bright lines.</p>
+      </div>
+      <div class="formula">
+        \[ \hat G(f) = e^{-2\pi^2\sigma^2 f^2} \qquad f_c = \frac{\sqrt{\ln 2 / 2}}{\pi\,\sigma} \approx \frac{0.187}{\sigma}\ \text{cycles / pixel} \]
+      </div>
+
+      <div class="prose">
+        <h3>Anne Hathaway up close, <em>Girl with a Pearl Earring</em> from afar</h3>
+        <p>Both look back over a shoulder with the head tilted the same way. The photo of Anne is tiny (250 &times; 333, eyes 34 pixels apart) and she supplies the high frequencies, so I only upscaled her 2&times; for display and scaled the painting by 0.607 to match. I aligned on the centres of the irises.</p>
+      </div>
+
+      <p class="fig-label">Fig. 11 &middot; Inputs, aligned, and a 50/50 overlay</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 0.75; --ratio: 250 / 333">
+          <div class="plate__well"><img src="media/p6-anne.jpg" alt="Photo of Anne Hathaway looking over her shoulder."></div>
+          <figcaption><span class="plate__label">Anne</span><span class="spec">high freq.</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 0.84; --ratio: 912 / 1080">
+          <div class="plate__well"><img src="media/p6-pearl.jpg" alt="Vermeer's Girl with a Pearl Earring."></div>
+          <figcaption><span class="plate__label">Vermeer</span><span class="spec">low freq.</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 0.8; --ratio: 440 / 550">
+          <div class="plate__well"><img src="media/p6-anne-aligned.jpg" alt="Anne aligned to the painting."></div>
+          <figcaption><span class="plate__label">Aligned</span><span class="spec">rotated 6&deg;</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 0.8; --ratio: 440 / 550">
+          <div class="plate__well"><img src="media/p6-pearl-aligned.jpg" alt="The painting aligned and cropped."></div>
+          <figcaption><span class="plate__label">Aligned</span><span class="spec">&times; 0.607</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 0.8; --ratio: 440 / 550">
+          <div class="plate__well"><img src="media/p6-overlay.jpg" alt="Fifty-fifty overlay: eyes, nose, mouth and earrings coincide."></div>
+          <figcaption><span class="plate__label">Overlay</span><span class="spec">features line up</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 12 &middot; Choosing the cutoffs</p>
+      <figure class="plate solo fit-contain" style="--ratio: 1344 / 756">
+        <div class="plate__well"><img src="media/p6-sweep.jpg" alt="Grid of hybrids over sigma low 6, 10, 14, sigma high 2, 4 and gain 1, 1.5, 2, each with a small far-view copy."></div>
+        <figcaption><span class="plate__label"><span class="nocase">&sigma;</span><sub>low</sub> <span class="nocase">&isin;</span> {6, 10, 14} &times; <span class="nocase">&sigma;</span><sub>high</sub> <span class="nocase">&isin;</span> {2, 4} &times; k <span class="nocase">&isin;</span> {1, 1.5, 2}</span><span class="spec">near view + 1/8 copy</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>With &sigma;<sub>high</sub> = 2 only eyelashes and hair strands survive and Anne looks ghostly; &sigma;<sub>high</sub> = 4 brings in the shape of her eyes and smile. &sigma;<sub>low</sub> = 6 leaves the girl's features sharp enough to compete. The far view reads as the painting in every cell, so there was room to boost Anne, but k = 2 adds halos along her jaw. I chose <strong>&sigma;<sub>high</sub> = 4</strong> (cutoff 0.047), <strong>&sigma;<sub>low</sub> = 10</strong> (cutoff 0.019) and <strong>k = 1.5</strong>.</p>
+      </div>
+      <p class="fig-label">Fig. 13 &middot; Filtered components and filter responses</p>
+      <div class="strip">
+        <figure class="plate" style="--w: 0.8; --ratio: 440 / 550">
+          <div class="plate__well"><img src="media/p6-anne-high.jpg" alt="High-passed Anne, mostly edges on mid-grey."></div>
+          <figcaption><span class="plate__label">High-passed Anne</span><span class="spec"><span class="nocase">&sigma;</span> = 4</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 0.8; --ratio: 440 / 550">
+          <div class="plate__well"><img src="media/p6-pearl-low.jpg" alt="Low-passed painting, heavily blurred."></div>
+          <figcaption><span class="plate__label">Low-passed painting</span><span class="spec"><span class="nocase">&sigma;</span> = 10</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 1.94; --ratio: 770 / 396">
+          <div class="plate__well"><img src="media/p6-filters.png" alt="Frequency responses of the low-pass and the scaled high-pass filter, with the two cutoffs marked."></div>
+          <figcaption><span class="plate__label">Filter responses</span><span class="spec">high-pass levels off at k = 1.5</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 14 &middot; The process in the frequency domain</p>
+      <figure class="plate solo fit-contain" style="--ratio: 1530 / 1305">
+        <div class="plate__well"><img src="media/p6-process.jpg" alt="Each input, its log spectrum, times the filter's frequency response, equals the filtered spectrum and image; bottom row the hybrid, its spectrum, and radially averaged spectra of every stage."></div>
+        <figcaption><span class="plate__label">Image &rarr; spectrum &times; response = filtered spectrum &rarr; image</span><span class="spec">log |FFT|</span></figcaption>
+      </figure>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 352">
+        <div class="plate__well"><img src="media/p6-fft.jpg" alt="Log magnitude spectra of the two aligned inputs, the two filtered images and the hybrid, on one colour scale."></div>
+        <figcaption><span class="plate__label">Inputs, high-passed, low-passed, hybrid</span><span class="spec">same colour scale</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>Filtering multiplies the spectrum by the filter's response. The high-pass is a small dark hole in a flat field, so Anne's spectrum survives almost whole apart from its bright centre. The low-pass is a small bright spot, so almost all of the painting's spectrum goes dark; the bright cross that remains comes from the image borders, which the FFT treats as periodic. The hybrid takes its centre from the painting and everything else from Anne.</p>
+        <p>The radial plot makes the handoff measurable. Below the painting's cutoff, 99.8% of the hybrid's spectral energy comes from the painting; above Anne's, 97% comes from Anne; between the two they share it, 37 / 63. The filtered curves cross at about 0.025 cycles per pixel, a period of about 40 pixels, roughly one eye. So anything eye-sized or smaller comes from Anne, and anything head-sized or larger (the turban, the jacket, the lighting) from the painting. Anne's two other features in the spectrum: a dark outer border, because her 2&times; upscale has nothing above 0.25 cycles per pixel, and a diagonal streak from the long edge of her shoulder strap.</p>
+      </div>
+
+      <p class="fig-label">Fig. 15 &middot; The hybrid at full size, then stepping back</p>
+      <figure class="plate solo fit-contain" style="--ratio: 893 / 550">
+        <div class="plate__well"><img src="media/p6-pyramid.jpg" alt="The hybrid at full, half, quarter, eighth and sixteenth size."></div>
+        <figcaption><span class="plate__label">1, 1/2, 1/4, 1/8, 1/16 size</span><span class="spec">Anne &rarr; Vermeer</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>Full and half size read as Anne, with the turban and jacket as soft colour that looks more like lighting. At a quarter the painting takes over, and at 1/8 it is only the painting. Shrinking 8&times; pushes Anne's band up near the pixel grid's limit, where downsampling removes it. Weak spots: her hair lies over the turban's yellow cloth, her dress strap draws a line across the jacket, and the busy background of the photo shows faintly on the right.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Agent P up close, Perry the Platypus from afar</h3>
+        <p>Two cartoons of the same character, where the fedora only appears when you look closely. I aligned on the beak (its left corner and tip, found by thresholding the orange), scaled Perry by 0.61, put his transparent background on Agent P's backdrop colour so the added detail doesn't clip against white, and padded him so the hat isn't cropped. Agent P's outlines are thin, so he needed <strong>&sigma;<sub>high</sub> = 6</strong> and <strong>k = 2</strong>; Perry uses <strong>&sigma;<sub>low</sub> = 12</strong>.</p>
+      </div>
+      <p class="fig-label">Fig. 16 &middot; Agent P and Perry, and the hybrid stepping back</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 0.68; --ratio: 556 / 816">
+          <div class="plate__well"><img src="media/p6-agentp.jpg" alt="Agent P wearing his fedora."></div>
+          <figcaption><span class="plate__label">Agent P</span><span class="spec">high freq.</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 1.5; --ratio: 1138 / 759">
+          <div class="plate__well"><img src="media/p6-perry.png" alt="Plain Perry the Platypus without a hat."></div>
+          <figcaption><span class="plate__label">Perry</span><span class="spec">low freq.</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 1.24; --ratio: 945 / 763">
+          <div class="plate__well"><img src="media/p6-agentp-pyramid.jpg" alt="The Agent P and Perry hybrid at decreasing sizes."></div>
+          <figcaption><span class="plate__label">1 to 1/16 size</span><span class="spec">Agent P &rarr; Perry</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <p>Up close it is Agent P: hat, narrowed eyes, long legs. At a quarter size the two compete, and by 1/8 it is plain Perry, a bright teal body with the beak and tail. The light glow along the outlines is high-pass ringing, made stronger by the gain.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Warm-up: Derek and Nutmeg</h3>
+        <p>I tested the pipeline on the provided pair first, with the cat's whiskers as the high frequencies (&sigma; = 3) and Derek as the low (&sigma; = 8). My first try, &sigma; = 6 and 10, let the cat take over at every size.</p>
+      </div>
+      <figure class="plate solo fit-contain" style="--ratio: 1064 / 455">
+        <div class="plate__well"><img src="media/p6-derek-pyramid.jpg" alt="The Derek and Nutmeg hybrid at decreasing sizes: cat up close, Derek when small."></div>
+        <figcaption><span class="plate__label">1, 1/2, 1/4, 1/8, 1/16 size</span><span class="spec">Nutmeg &rarr; Derek</span></figcaption>
+      </figure>
+
+      <div class="prose">
+        <h3>Bells and whistles: colour</h3>
+        <p>I rebuilt the Anne hybrid with each component in colour or in grey.</p>
+      </div>
+      <p class="fig-label">Fig. 17 &middot; Which half needs colour</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1600 / 462">
+        <div class="plate__well"><img src="media/p6-color.jpg" alt="Four versions of the hybrid: grey plus grey, colour high only, colour low only, colour both."></div>
+        <figcaption><span class="plate__label">Grey + grey &middot; colour high &middot; colour low &middot; colour both</span><span class="spec">Anne + Vermeer</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>Colour matters on the low-frequency side. The painting is recognised by its blue turban and golden jacket; in grey, the far view is just a black and white photo of Anne. Colour on the high frequencies only adds a touch of red to her lips and faint fringes, so "colour low" and "colour both" look nearly the same. The Derek pair shows the same pattern: fur and whiskers are brightness edges with almost no hue of their own.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 07 Gaussian and Laplacian stacks (2.3)                           -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-7" aria-labelledby="part-7-title">
+      <header class="part__head">
+        <p class="eyebrow">07</p>
+        <h2 class="part__title" id="part-7-title">Gaussian and Laplacian stacks</h2>
+      </header>
+
+      <div class="prose">
+        <p>A stack is a pyramid without the downsampling, so the blur has to grow instead. Level <span class="num">i</span> blurs level <span class="num">i&minus;1</span> with &sigma; = 2 &middot; 2<sup>i&minus;1</sup>; since blurs add in quadrature, the total blur is about 2, 4.5, 9.2, 18.4 and 36.9, roughly doubling like a pyramid. Each Laplacian level is the difference of neighbouring Gaussian levels, and the last keeps the blurriest Gaussian so the stack sums back to the image (error 1.1e-16). No built-in pyramid functions.</p>
+      </div>
+<pre class="codeblock"><code>def gaussian_stack(im, levels=6, sigma0=2.0):
+    stack = [im]
+    for i in range(1, levels):
+        stack.append(blur(stack[-1], sigma0 * 2 ** (i - 1)))
+    return stack
+
+def laplacian_stack(im, levels=6, sigma0=2.0):
+    G = gaussian_stack(im, levels, sigma0)
+    return [G[i] - G[i + 1] for i in range(levels - 1)] + [G[-1]]</code></pre>
+
+      <p class="fig-label">Fig. 18 &middot; Stacks of the apple and the orange</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1560 / 560">
+        <div class="plate__well"><img src="media/p7-apple-stacks.jpg" alt="Apple: Gaussian stack on top, Laplacian stack below, six levels."></div>
+        <figcaption><span class="plate__label">Apple</span><span class="spec">Gaussian above, Laplacian below</span></figcaption>
+      </figure>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1560 / 560">
+        <div class="plate__well"><img src="media/p7-orange-stacks.jpg" alt="Orange: Gaussian stack on top, Laplacian stack below, six levels."></div>
+        <figcaption><span class="plate__label">Orange</span><span class="spec">last Laplacian level = residual</span></figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>To blend, each Laplacian level is mixed with the matching level of a blurred mask, then the levels are summed. Fine texture switches sides almost at once, while colour and brightness fade over a wide band.</p>
+      </div>
+      <p class="fig-label">Fig. 19 &middot; The mask's Gaussian stack</p>
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1560 / 280">
+        <div class="plate__well"><img src="media/p7-mask-stack.png" alt="The step mask blurred more at each level."></div>
+        <figcaption><span class="plate__label">Mask, levels 0 to 5</span><span class="spec">hard edge &rarr; wide ramp</span></figcaption>
+      </figure>
+      <p class="fig-label">Fig. 20 &middot; Hard seam, the oraple, and Szeliski Figure 3.42 recreated</p>
+      <div class="strip">
+        <figure class="plate" style="--w: 1; --ratio: 1 / 1">
+          <div class="plate__well"><img src="media/p7-hard-seam.jpg" alt="Apple and orange joined with a hard vertical seam."></div>
+          <figcaption><span class="plate__label">Hard seam</span><span class="spec">visible line</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1; --ratio: 1 / 1">
+          <div class="plate__well"><img src="media/p7-oraple.jpg" alt="The oraple: apple and orange blended with no visible seam."></div>
+          <figcaption><span class="plate__label">Oraple</span><span class="spec">6 levels, <span class="nocase">&sigma;</span><sub>0</sub> = 2</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 0.75; --ratio: 900 / 1200">
+          <div class="plate__well"><img src="media/p7-figure-3-42.jpg" alt="Laplacian levels 0, 2 and 4 of the masked apple, masked orange and their sum, and the collapsed results in the last row."></div>
+          <figcaption><span class="plate__label">Fig. 21.42: levels 0, 2, 4, collapsed</span><span class="spec">apple &middot; orange &middot; blend</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <p>The same layout as the book: masked apple, masked orange and their sum at Laplacian levels 0, 2 and 4, and each column collapsed in the last row. The high bands (a, b) cut off sharply at the centre and the low bands (g, h) overlap over a wide zone. The two fades in (j) and (k) are complementary, so they add up to the full oraple in (l).</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 08 Multiresolution blending (2.4)                                -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-8" aria-labelledby="part-8-title">
+      <header class="part__head">
+        <p class="eyebrow">08</p>
+        <h2 class="part__title" id="part-8-title">Multiresolution blending</h2>
+      </header>
+
+      <div class="prose">
+        <p>Both blends reuse the stacks from the oraple in 07. Each Laplacian level of the two images is mixed with the matching level of the mask's Gaussian stack, then everything is summed. Before blending, one image is placed, scaled or cropped into the other's frame so the parts that meet actually line up.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Irregular mask: a volcano swallowing the sun</h3>
+        <p>I cut the volcano out of a night eruption photo and set it into a sunset over the sea, with the summit on the sun so the crater looks like it is eating it.</p>
+        <ul>
+          <li>The flanks are straight lines fitted to an automatic rock edge. A pixel counts as rock when red clearly beats blue or it is dark, which keeps the pink lava trails in the sky out.</li>
+          <li>The crater rim is traced by hand, since the eruption glow can't be thresholded. The outline is then pulled 14 px into the rock to drop a pale rim of backlit sky.</li>
+          <li>The sunset is upscaled 2&times; and the volcano scaled by 0.74, with the summit placed 25 px above the sun's centre. Level with the centre, the sun just sat on the peak; 25 px up, the crater hides its lower half. The flanks also cover the sun's reflection in the water.</li>
+        </ul>
+      </div>
+
+      <p class="fig-label">Fig. 22 &middot; Inputs: the traced volcano and the sunset</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 2.59; --ratio: 1260 / 486">
+          <div class="plate__well"><img src="media/p8-volcano-cutout.jpg" alt="The volcano photo with its traced outline, and the volcano on its own with the sky removed."></div>
+          <figcaption><span class="plate__label">Traced outline &middot; cut-out</span><span class="spec">plume and sky removed</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-sunset.jpg" alt="A red sun setting over the sea under orange clouds."></div>
+          <figcaption><span class="plate__label">Sunset</span><span class="spec">upscaled 2&times;</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="prose">
+        <p>Two things made it smooth. First, I replaced the volcano photo's own sky with the sunset before blending. The coarse levels of the mask reach well past the outline, and the blue sky had leaked through as a pale haze along both flanks. Second, I kept the transition narrow. A wide one (7 levels, <span class="nocase">&sigma;</span><sub>0</sub> = 2, about 74 px) spread the volcano's dark tones into the sun and turned the rim to haze, worse than a plain paste. A volcano in front of the sun is an occlusion edge that should stay crisp, so I used 4 levels, <span class="nocase">&sigma;</span><sub>0</sub> = 1 and a 1.5 px feather: enough to remove fringes and pixel steps, not enough to blur.</p>
+      </div>
+
+      <p class="fig-label">Fig. 23 &middot; Hard cut and blend</p>
+      <div class="strip strip--narrow">
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-volcano-hard.jpg" alt="The volcano pasted into the sunset with a crisp edge at the crater."></div>
+          <figcaption><span class="plate__label">Plain paste</span><span class="spec">binary mask, no clean-up</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-volcano-blend.jpg" alt="The volcano blended into the sunset, its crater swallowing the lower half of the sun."></div>
+          <figcaption><span class="plate__label">Blended</span><span class="spec">4 levels, <span class="nocase">&sigma;</span><sub>0</sub> = 1</span></figcaption>
+        </figure>
+      </div>
+      <div class="prose">
+        <p>The plain paste shows what the pipeline removes: a yellow and pink fringe of eruption glow along the crater, a stair-stepped edge against the sun, and a pale strip of the original blue sky down the left flank. The blend keeps the rim just as crisp but clean. What still gives it away is the lighting: the lava is lit from within and far sharper than the hazy sunset.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Irregular mask: fingerprints for tree rings</h3>
+        <p>In a photo of stacked logs I replaced the growth rings with a fingerprint, so each log looks like it grew a whorl. The bark and the pale sapwood band stay real, and inside, the original rings still show faintly through the print.</p>
+        <ul>
+          <li>Touching logs merge under colour thresholding, so I fitted an ellipse to each of the 11 visible faces by eye and marked its pith, which is often off-centre.</li>
+          <li>For each face the print is scaled so its whorl sits on the pith and it reaches the far edge of the face. Each copy is rotated differently so they don't all point the same way.</li>
+          <li>A black print on wood reads as ink, so I tinted it with each log's own blurred wood colour. Ridges get a darker, warmer version of that colour, like the real latewood bands.</li>
+          <li>The mask is radial per face: full inside half the radius and fading to zero at 80%, so the outer rim is always the real photo. It peaks at 0.75, not 1, which keeps the cracks and a trace of the rings visible over the print.</li>
+        </ul>
+      </div>
+
+      <p class="fig-label">Fig. 24 &middot; Inputs, the fitted print, and the mask</p>
+      <div class="strip">
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-trees.jpg" alt="Cut ends of stacked logs showing growth rings."></div>
+          <figcaption><span class="plate__label">Tree rings</span><span class="spec">original</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 0.72; --ratio: 429 / 600">
+          <div class="plate__well"><img src="media/p8-fingerprint.jpg" alt="A black fingerprint on white."></div>
+          <figcaption><span class="plate__label">Fingerprint</span><span class="spec">whorl at (228, 350)</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-trees-printed.jpg" alt="The log faces filled with fitted, wood-tinted fingerprints."></div>
+          <figcaption><span class="plate__label">Fitted, tinted</span><span class="spec">one per face</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-trees-mask.png" alt="Soft grey discs over each log face on a black background."></div>
+          <figcaption><span class="plate__label">Mask</span><span class="spec">peaks at 0.75</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fig-label">Fig. 25 &middot; Hard cut and blend</p>
+      <div class="strip strip--narrow">
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-trees-hard.jpg" alt="Fingerprints inside each log, ending in a hard circular edge."></div>
+          <figcaption><span class="plate__label">Plain paste</span><span class="spec">full strength, hard edge</span></figcaption>
+        </figure>
+        <figure class="plate" style="--w: 1.5; --ratio: 3 / 2">
+          <div class="plate__well"><img src="media/p8-trees-blend.jpg" alt="Fingerprints inside each log, fading smoothly into the real rings."></div>
+          <figcaption><span class="plate__label">Blended</span><span class="spec">6 levels, <span class="nocase">&sigma;</span><sub>0</sub> = 2</span></figcaption>
+        </figure>
+      </div>
+      <div class="prose">
+        <p>The plain paste stamps a disc on each log with a visible border, and covers the real cracks. Blended, the print fades into the real rings over the outer third of each face, and the colours match because it was tinted with the wood itself. Up close the ridges still have the texture of an ink print, and in the two shaded logs at the bottom the print is darker and harder to see.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Process: the Laplacian stacks</h3>
+      </div>
+      <p class="fig-label">Fig. 26 &middot; Laplacian levels and collapsed, laid out like Szeliski Figure 3.42</p>
+      <div class="pair">
+        <figure class="plate fit-contain" style="--ratio: 900 / 1200">
+          <div class="plate__well"><img src="media/p8-volcano-stacks.jpg" alt="Laplacian levels 0, 2 and 4 of the masked volcano, the masked sunset and their sum, and the collapsed results."></div>
+          <figcaption><span class="plate__label">Volcano &middot; sunset &middot; blend</span><span class="spec">levels 0, 1, 2 of 4</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--ratio: 900 / 1200">
+          <div class="plate__well"><img src="media/p8-trees-stacks.jpg" alt="Laplacian levels 0, 2 and 4 of the masked fingerprint, the masked logs and their sum, and the collapsed results."></div>
+          <figcaption><span class="plate__label">Print &middot; logs &middot; blend</span><span class="spec">6 levels</span></figcaption>
+        </figure>
+      </div>
+      <div class="prose">
+        <p>Volcano: at every level the sun's rim (b, e, h) is cut along the crater and the lava streaks (a, d, g) stop at the outline; with 4 levels the widest transition is under 10 px, so the collapsed halves (j, k) meet on a clean line.</p>
+        <p>Logs: at level 2, the scale of the ridges and rings themselves, the print (d) dominates the middle of each face while the real rings (e) take over towards the rim. By level 4 only broad shading is left, and the collapsed inputs (j, k) fade into each other.</p>
+      </div>
+
+      <div class="prose">
+        <h3>Bells and whistles: colour</h3>
+      </div>
+      <p class="fig-label">Fig. 27 &middot; Blending in grey and in colour</p>
+      <div class="strip">
+        <figure class="plate fit-contain" style="--w: 2; --ratio: 1000 / 500">
+          <div class="plate__well"><img src="media/p8-volcano-color.jpg" alt="The volcano and sunset blended in grey and in colour."></div>
+          <figcaption><span class="plate__label">Grey &middot; colour</span><span class="spec">volcano</span></figcaption>
+        </figure>
+        <figure class="plate fit-contain" style="--w: 2; --ratio: 1000 / 500">
+          <div class="plate__well"><img src="media/p8-trees-color.jpg" alt="The fingerprint logs blended in grey and in colour."></div>
+          <figcaption><span class="plate__label">Grey &middot; colour</span><span class="spec">logs</span></figcaption>
+        </figure>
+      </div>
+      <div class="prose">
+        <p>For the volcano, grey mostly kills the effect: the sun becomes a grey disc and the lava just light lines on a dark cone. The trick works because the lava and the sunset are the same orange, and blending each channel lets that orange run continuously from the lava into the sun.</p>
+        <p>For the logs, grey makes the print look like a separate layer on top of the wood, since brightness is all there is to compare. In colour the ridges share the reddish brown of the real latewood, which is most of what makes them read as part of the tree.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- 09 What I learned                                                -->
+    <!-- ================================================================ -->
+    <section class="part" id="part-9" aria-labelledby="part-9-title">
+      <header class="part__head">
+        <p class="eyebrow">09</p>
+        <h2 class="part__title" id="part-9-title">What I learned</h2>
+      </header>
+
+      <div class="prose">
+        <p>Almost every part of this project came down to the same Gaussian filter, used in different ways. It smoothed the cameraman before differentiating, its complement sharpened the Taj Mahal, one of each made a hybrid, and a stack of them did the blending. What changed from part to part was only the decision about which frequencies should end up where.</p>
+        <p>What surprised me was how much of that decision is about perception rather than maths. Unsharp masking doesn't recover any lost detail, and my blur-then-sharpen test showed that, yet the result still looks sharper. A hybrid image is one fixed grid of pixels that turns into a different picture depending on how far away you stand. And a blend only looked seamless when the width of its transition matched what it was joining. The volcano's outline against the sun needed just a few pixels; when I widened it to make things smoother, it turned to haze and looked worse than a plain paste. The fingerprint, which had to dissolve into the wood, needed to fade over a third of each log.</p>
+        <p>I started out thinking of an image as a grid of pixels. I now think of it as a set of scales, each of which the eye reads differently.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <span><a href="../">&larr; All projects</a></span>
+    <span>Yong Tze Fon Timothy &middot; CS180 Project 2</span>
+    <span><a href="https://azhicles.github.io/2/">azhicles.github.io/2/</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
