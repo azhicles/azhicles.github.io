@@ -72,10 +72,10 @@
       <p>To generate, the model starts from noise at <span class="num">t = 0</span> and follows its own velocity field to <span class="num">t = 1</span>. Each training pair is a straight path, but the learned field bends, because the predicted direction depends on where you are. So sampling integrates it in small steps.</p>
     </div>
 
-    <!-- PENDING-OBS: page status. Delete this note once every result is in. -->
+    <!-- PENDING-OBS: page status. Part B is in; delete this note once the Part A results are in too. -->
     <div class="note">
       <span class="note__label">Status</span>
-      <p>The notebooks for this project are still running. Figures that show a hatched &ldquo;result pending&rdquo; box, and the notes marked as pending, will be filled in from their output.</p>
+      <p>The Part B results are in. Part A is being re-run, so its figures show a hatched &ldquo;result pending&rdquo; box and its notes are marked as pending until the new results are added.</p>
     </div>
 
     <nav class="contents" aria-label="Contents, Part A">
@@ -455,12 +455,12 @@ def euler_sample(x_start, t_start, step_size, velocity):
           <figcaption><span class="plate__label">Perry meme</span><span class="spec">from the web</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><img src="media/spike.jpg" alt="Pencil drawing of Spike, the cactus character from Brawl Stars, on white paper."></div>
-          <figcaption><span class="plate__label">Spike</span><span class="spec">my drawing</span></figcaption>
+          <div class="plate__well"><img src="media/spike.jpg" alt="Digital painting of Spike, the green cactus character from Brawl Stars, with a pink flower on his head, against a pale blue sky."></div>
+          <figcaption><span class="plate__label">Spike</span><span class="spec">my painting</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><img src="media/niu_lai.jpg" alt="Pencil drawing of Niu Lai, a standing cow character with horns and a big muzzle, on white paper."></div>
-          <figcaption><span class="plate__label">Niu Lai</span><span class="spec">my drawing</span></figcaption>
+          <div class="plate__well"><img src="media/mbs.jpg" alt="Digital painting of Marina Bay Sands in Singapore: three towers under the long rooftop deck, with trees, a curved building and dark water in front."></div>
+          <figcaption><span class="plate__label">Marina Bay Sands</span><span class="spec">my painting</span></figcaption>
         </figure>
       </div>
 
@@ -491,7 +491,7 @@ def euler_sample(x_start, t_start, step_size, velocity):
 
       <div class="prose">
         <h3>A web image and two drawings</h3>
-        <p>Editing works best on images that are not photos at all, since the model has to pull them onto the manifold of natural images. The web image is a meme that draws Perry the Platypus as a teal rectangle with an orange bill and Phineas as a triangle with a tuft of hair; Phineas only recognises Perry once he gets his hat. It is all flat colour and hard edges, the opposite of a photo. The two drawings are pencil sketches on paper: Spike, the cactus from Brawl Stars, and Niu Lai, a cow character. They are thin grey lines on white with uneven light from the phone camera, so there is almost no colour or texture to start from.</p>
+        <p>Editing works best on images that are not photos at all, since the model has to pull them onto the manifold of natural images. The web image is a meme that draws Perry the Platypus as a teal rectangle with an orange bill and Phineas as a triangle with a tuft of hair; Phineas only recognises Perry once he gets his hat. It is all flat colour and hard edges, the opposite of a photo. The two drawings are my own digital paintings in loose, flat brush strokes: Spike, the cactus from Brawl Stars, and Marina Bay Sands in Singapore. They have colour and clear shapes, but no texture, lighting or fine detail, so the model has to invent all of that.</p>
       </div>
 
       <p class="fig-label">Fig. 13 &middot; The same sweep on a web image and two drawings</p>
@@ -500,18 +500,18 @@ def euler_sample(x_start, t_start, step_size, velocity):
         <figcaption><span class="plate__label">Perry meme</span><span class="spec">web &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_spike.png</div><img src="media/parta/edit_spike.png" alt="The Spike drawing and its edits from starting times 0.02 to 0.50."></div>
-        <figcaption><span class="plate__label">Spike</span><span class="spec">drawing &middot; t = 0.02 &hellip; 0.50</span></figcaption>
+        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_spike.png</div><img src="media/parta/edit_spike.png" alt="The Spike painting and its edits from starting times 0.02 to 0.50."></div>
+        <figcaption><span class="plate__label">Spike</span><span class="spec">painting &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_niu_lai.png</div><img src="media/parta/edit_niu_lai.png" alt="The Niu Lai drawing and its edits from starting times 0.02 to 0.50."></div>
-        <figcaption><span class="plate__label">Niu Lai</span><span class="spec">drawing &middot; t = 0.02 &hellip; 0.50</span></figcaption>
+        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_mbs.png</div><img src="media/parta/edit_mbs.png" alt="The Marina Bay Sands painting and its edits from starting times 0.02 to 0.50."></div>
+        <figcaption><span class="plate__label">Marina Bay Sands</span><span class="spec">painting &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 3.1 web image and drawings: what the model reads the flat shapes and pencil lines as. -->
+      <!-- PENDING-OBS: 3.1 web image and paintings: what the model reads the flat shapes and brush strokes as. -->
       <div class="note">
         <span class="note__label">Observations pending</span>
-        <p>What the model reads the flat shapes and pencil lines as at each starting time.</p>
+        <p>What the model reads the flat shapes and brush strokes as at each starting time.</p>
       </div>
     </section>
 
@@ -614,7 +614,9 @@ def visual_anagrams(noise, condition_a, condition_b, predict_velocity, w=7, step
         \[ v = f_{\text{low}}\big(v_{\text{cfg}}(x_t, t, p_1)\big) + f_{\text{high}}\big(v_{\text{cfg}}(x_t, t, p_2)\big), \qquad f_{\text{high}}(v) = v - f_{\text{low}}(v) \]
       </div>
       <div class="prose">
-        <p>The low-pass is a Gaussian blur with &sigma; = 16 and a 265-pixel kernel at 512 &times; 512. It filters the velocities, not the finished image, so the two prompts negotiate the image throughout sampling instead of being glued together at the end. The first prompt sets what you see from far away and the second the detail up close. Both prompts in each pair are lithographs, so the two halves share one style, and I chose close-up subjects whose lines could draw the distant one: branches for an owl's feathers, canyon ridges for a lion's mane.</p>
+        <p>The low-pass is a Gaussian blur with &sigma; = 16 and a 265-pixel kernel at 512 &times; 512. It filters the velocities, not the finished image, so the two prompts negotiate the image throughout sampling instead of being glued together at the end. The first prompt sets what you see from far away and the second the detail up close.</p>
+        <!-- PENDING-OBS: 3.4 the two final prompt pairs and why I chose them (also the Fig. 16 and 17 labels and captions). -->
+        <p>The prompt pairs: (prompt to be updated).</p>
       </div>
 <pre class="codeblock"><code>def lowpass(x, sigma=16.0):                          # kernel 265 at 512 x 512
     kernel = 2 * round(16.5 * x.shape[-1] / 64) + 1
@@ -629,11 +631,11 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
     x, _ = euler_sample(noise, 0, step_size, velocity)
     return x</code></pre>
 
-      <p class="fig-label">Fig. 16 &middot; Up close: bare branches &middot; from afar: an owl</p>
+      <p class="fig-label">Fig. 16 &middot; Hybrid 1 &middot; (prompt to be updated)</p>
       <div class="strip strip--narrow strip--keep">
         <figure class="plate ratio-square" style="--w: 1">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_0.png</div><img src="media/parta/hybrid_0.png" alt="Hybrid image at full size: up close, a lithograph of bare tree branches in winter; from afar, a lithograph of an owl."></div>
-          <figcaption><span class="plate__label">Full size</span><span class="spec">close: &ldquo;bare tree branches in winter&rdquo;</span></figcaption>
+          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_0.png</div><img src="media/parta/hybrid_0.png" alt="The first hybrid image at full size."></div>
+          <figcaption><span class="plate__label">Full size</span><span class="spec">(prompt to be updated)</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .25">
           <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_0.png" alt="The same hybrid at a quarter size."></div>
@@ -644,11 +646,11 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
           <figcaption><span class="plate__label">1/8</span></figcaption>
         </figure>
       </div>
-      <p class="fig-label">Fig. 17 &middot; Up close: a rocky canyon &middot; from afar: a lion's face</p>
+      <p class="fig-label">Fig. 17 &middot; Hybrid 2 &middot; (prompt to be updated)</p>
       <div class="strip strip--narrow strip--keep">
         <figure class="plate ratio-square" style="--w: 1">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_1.png</div><img src="media/parta/hybrid_1.png" alt="Hybrid image at full size: up close, a lithograph of a rocky canyon; from afar, a lithograph of a lion's face."></div>
-          <figcaption><span class="plate__label">Full size</span><span class="spec">close: &ldquo;a rocky canyon&rdquo;</span></figcaption>
+          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_1.png</div><img src="media/parta/hybrid_1.png" alt="The second hybrid image at full size."></div>
+          <figcaption><span class="plate__label">Full size</span><span class="spec">(prompt to be updated)</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .25">
           <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_1.png" alt="The same hybrid at a quarter size."></div>
@@ -660,7 +662,7 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
         </figure>
       </div>
       <div class="prose">
-        <p>Each hybrid is one 512 &times; 512 image (seeds 180 and 181), shown three times at shrinking sizes to stand in for stepping back from it. The notebook's own distant view is a 64 &times; 64 copy, close to the size of the smallest one here.</p>
+        <p>Each hybrid is one 512 &times; 512 image, shown three times at shrinking sizes to stand in for stepping back from it. The notebook's own distant view is a 64 &times; 64 copy, close to the size of the smallest one here.</p>
       </div>
 
       <!-- PENDING-OBS: 3.4 how each hybrid reads up close and when the distant prompt takes over. -->
@@ -695,8 +697,8 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
       <div class="prose">
         <p>I generalised <span class="num">visual_anagrams</span> into <span class="num">anagram_view</span>, which takes a view and its inverse, and picked two views:</p>
         <ul>
-          <li><strong>Rotation by 90&deg;.</strong> <span class="num">torch.rot90(x, 1, (&minus;2, &minus;1))</span> turns the image a quarter turn counter-clockwise, a permutation of the pixels. Its inverse is a quarter turn the other way, and the notebook checks that the two undo each other. A waterfall is tall and a sleeping cat is long and low, so a quarter turn should swap one silhouette for the other.</li>
-          <li><strong>Negation.</strong> In <span class="num">[&minus;1, 1]</span> pixel space, <span class="num">x &rarr; &minus;x</span> is colour inversion, a photographic negative. It is <span class="num">&minus;I</span>, which is orthogonal and its own inverse, and it maps Gaussian noise to Gaussian noise. White on white should become black on black, so the pair is a polar bear in the snow and a black cat in the dark.</li>
+          <li><strong>Rotation by 90&deg;.</strong> <span class="num">torch.rot90(x, 1, (&minus;2, &minus;1))</span> turns the image a quarter turn counter-clockwise, a permutation of the pixels. Its inverse is a quarter turn the other way, and the notebook checks that the two undo each other. Prompt pair: (prompt to be updated).</li>
+          <li><strong>Negation.</strong> In <span class="num">[&minus;1, 1]</span> pixel space, <span class="num">x &rarr; &minus;x</span> is colour inversion, a photographic negative. It is <span class="num">&minus;I</span>, which is orthogonal and its own inverse, and it maps Gaussian noise to Gaussian noise. Prompt pair: (prompt to be updated).</li>
         </ul>
       </div>
 <pre class="codeblock"><code>def anagram_view(noise, condition_a, condition_b, view, inverse_view,
@@ -716,15 +718,15 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
 
       <p class="fig-label">Fig. 18 &middot; A quarter turn and a negative</p>
       <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_rotate90_views.png</div><img src="media/parta/anagram_rotate90_views.png" alt="Rotation anagram: upright, a watercolor painting of a waterfall; turned 90 degrees, a watercolor painting of a sleeping cat."></div>
-        <figcaption><span class="plate__label">&ldquo;a watercolor painting of a waterfall&rdquo; &middot; turned 90&deg;: &ldquo;a watercolor painting of a sleeping cat&rdquo;</span><span class="spec">seed 180</span></figcaption>
+        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_rotate90_views.png</div><img src="media/parta/anagram_rotate90_views.png" alt="Rotation anagram, shown upright and turned 90 degrees."></div>
+        <figcaption><span class="plate__label">Upright &middot; turned 90&deg; &middot; (prompt to be updated)</span><span class="spec">view: rot90</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_negate_views.png</div><img src="media/parta/anagram_negate_views.png" alt="Negation anagram: as generated, a lithograph of a polar bear in the snow; colour-inverted, a lithograph of a black cat in the dark."></div>
-        <figcaption><span class="plate__label">&ldquo;a lithograph of a polar bear in the snow&rdquo; &middot; inverted: &ldquo;a lithograph of a black cat in the dark&rdquo;</span><span class="spec">seed 181</span></figcaption>
+        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_negate_views.png</div><img src="media/parta/anagram_negate_views.png" alt="Negation anagram, shown as generated and colour-inverted."></div>
+        <figcaption><span class="plate__label">As generated &middot; inverted &middot; (prompt to be updated)</span><span class="spec">view: negate</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B&W anagrams: how well each view works; comparison with the 180-degree anagrams. -->
+      <!-- PENDING-OBS: B&W anagrams: the final prompt pairs (body text and Fig. 18 captions); how well each view works; comparison with the 180-degree anagrams. -->
       <div class="note">
         <span class="note__label">Observations pending</span>
         <p>How convincing each view is, and how the two compare with the 180&deg; anagrams.</p>
@@ -832,19 +834,18 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
       </figure>
 
       <p class="fig-label">Fig. 22 &middot; Held-out digits after epochs 1 and 5</p>
-      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 414">
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 413">
         <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_epoch1.png</div><img src="media/partb/denoise_epoch1.png" alt="After epoch 1: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
         <figcaption><span class="plate__label">Epoch 1</span><span class="spec">rows: clean, noisy, denoised</span></figcaption>
       </figure>
-      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 414">
+      <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 413">
         <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_epoch5.png</div><img src="media/partb/denoise_epoch5.png" alt="After epoch 5: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
         <figcaption><span class="plate__label">Epoch 5</span><span class="spec">rows: clean, noisy, denoised</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B 1.2.1 loss behaviour; epoch 1 vs 5 quality; final loss from metrics.json. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the loss behaves and how much the denoised digits improve from epoch 1 to epoch 5.</p>
+      <div class="prose">
+        <p>The loss falls from about 0.19 to under 0.02 within the first 50 or so steps, then creeps down for the rest of training. Averaged over the last 100 steps it ends at 0.0083.</p>
+        <p>After one epoch the denoiser already recovers every digit, but the strokes are soft and a faint grey speckle is left in the background. After five the background is clean black and the strokes are sharper and closer to the clean row, though still a little blurrier than it, which is what an MSE loss does when it cannot tell exactly where an edge was. The noise can also leave a trace in the digit itself: in the third column it drew a crossbar on the 1, and both epochs keep a small stub there.</p>
       </div>
     </section>
 
@@ -862,15 +863,13 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <p>The denoiser only ever saw &sigma; = 0.5. Here the trained model gets three test digits, each with one fixed noise sample, and only &sigma; changes, from 0 to 1.</p>
       </div>
       <p class="fig-label">Fig. 23 &middot; One digit, one noise sample, seven noise levels</p>
-      <figure class="plate solo fit-contain" style="--ratio: 1440 / 828">
+      <figure class="plate solo fit-contain" style="--ratio: 1440 / 827">
         <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_ood.png</div><img src="media/partb/denoise_ood.png" alt="Three test digits at sigma 0 to 1: rows alternate between the noisy input and the denoiser's output."></div>
         <figcaption><span class="plate__label"><span class="nocase">&sigma;</span> = 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0</span><span class="spec">rows: noisy, denoised &times; 3 digits</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B 1.2.2 how the denoiser does below and above sigma = 0.5. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the denoiser does below and above the &sigma; = 0.5 it was trained on.</p>
+      <div class="prose">
+        <p>Up to &sigma; = 0.5 the outputs are clean and almost identical to each other, and at &sigma; = 0 the denoiser leaves the digit alone. At 0.6 the first artefact appears: the 1 grows a short horizontal tick. At 0.8 and 1.0 the denoiser starts to read clumps of noise as strokes. The 7 picks up extra marks across its middle, the 2 gets vertical blobs through it, and the 1 turns into something closer to a crossed 7. It only learned how much noise to expect at &sigma; = 0.5, so above that it keeps part of the noise as if it were ink.</p>
       </div>
 
       <div class="prose">
@@ -902,10 +901,8 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <p>Why this cannot work: with an MSE loss, the best output for a given input is the average of all the targets that come with that input. Here the input is independent of the target, so every noise image comes with every digit, and the best output is the same for all of them: the pixel-wise mean of the training set, which is a blurry overlay of all ten digits. It is the centroid of the data, the single image closest on average to every training digit. That mean is plotted above for comparison.</p>
       </div>
 
-      <!-- PENDING-OBS: B 1.2.3 the patterns in the outputs, how they vary across inputs, how close they are to the mean image. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>The patterns in the generated outputs, how much they vary between noise inputs, and how closely they match the mean image.</p>
+      <div class="prose">
+        <p>That is exactly what happened. The loss drops to about 0.07 within the first 50 or so steps and then stays flat (0.067 over the last 100 steps, against 0.0083 for the &sigma; = 0.5 denoiser). All 16 outputs are the same image whatever noise goes in: a blurry grey blob that looks like several digits laid on top of each other, most clearly a 0 and a 9. After one epoch it is slightly grainy; after five it is smooth and very close to the mean of the training set shown above. The model has learned to ignore its input and output the centroid of the data.</p>
       </div>
     </section>
 
@@ -992,10 +989,9 @@ def time_fm_sample(unet, img_wh, num_ts, seed=0, num_samples=40):
         <figcaption><span class="plate__label">Epoch 10</span><span class="spec">50 steps, seed 180</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B 2.3 how legible the digits are at each epoch; typical failures. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How legible the samples are after each epoch, and what the typical failures look like.</p>
+      <div class="prose">
+        <p>The loss starts near 2.9, falls below 0.5 within a few hundred steps and ends at 0.094 (last 100 steps). It cannot reach zero, because the same x<sub>t</sub> can come from many pairs of noise and digit, and the best the model can do is predict their average velocity.</p>
+        <p>After one epoch the samples are white strokes of the right thickness in the right place, but mostly not digits yet: hooks, squiggles and broken pieces, with a few 1s. By epoch 5 most are recognisable, and by epoch 10 most of the 40 are legible, with smoother strokes and less grain. Because every grid starts from the same noise, the same cell usually becomes the same digit at epochs 5 and 10, like the 9 in the top-left corner and the 0 in the second row. A handful never become digits: the squiggle in the middle of the second row, the broken stroke with a dot in the third row, and a few cells that sit between a 4, a 7 and a 9.</p>
       </div>
     </section>
 
@@ -1065,10 +1061,8 @@ return F.mse_loss(unet(x_t, c, t, mask), x_1 - x_0)</code></pre>
         <figcaption><span class="plate__label">Epoch 10</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B 2.6 quality per epoch and comparison with the time-only model. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the samples improve from epoch 1 to 10, and how they compare with the time-only model in 12.</p>
+      <div class="prose">
+        <p>After one epoch every sample is already a legible digit of the right class, a level the time-only model did not reach even after ten epochs. Knowing the class does most of the work. The strokes are still thick and blotchy, the 5s are broken into pieces, and a faint grey square shows around each digit. By epoch 5 all 40 are clean digits of the right class, and epoch 10 mostly tidies edges; the shapes barely change, since the starting noise is the same. The four copies of each digit still differ in slant, width and stroke weight, so guidance at &gamma; = 5 has not collapsed them into one template. The only flaw I can find at epoch 10 is a stray dot beside the 5 in the third row. The final loss is 0.085, below the time-only model's 0.094 with the same training budget.</p>
       </div>
 
       <div class="prose">
@@ -1091,10 +1085,8 @@ train_flow(nosched_fm, num_epochs=10, lr=NO_SCHEDULER_LR, name='class_no_schedul
         <figcaption><span class="plate__label">Epoch 10, no scheduler</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: no scheduler: does it match the scheduled run? Compare final losses (metrics.json "final_loss": class vs class_no_scheduler) and samples. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Whether the constant learning rate matches the scheduled run, comparing the final losses and the epoch 10 samples.</p>
+      <div class="prose">
+        <p>The constant learning rate works. The final loss is 0.0856 against 0.0849 with the scheduler, less than 1% higher, and the curve has the same shape. After 10 epochs all 40 samples are the right digit and look almost the same as the scheduled run in Fig. 29, since both start from the same weights and the same noise. The differences are small: a few strokes are rougher, the 4 in the top row has a doubled stroke and the 8 in the second row a stray tail, and the stray dot beside the third-row 5 appears here too. For this model and 10 epochs, a constant 1e-3 is enough to replace the schedule.</p>
       </div>
     </section>
 
@@ -1139,10 +1131,9 @@ time_fm_sample(time_fm.unet, (28, 28), 300, seed=SEED)</code></pre>
         <figcaption><span class="plate__label">Better model, 300 steps</span><span class="spec">D = 128, 20 epochs</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B&W time UNet: does it beat 2.3? How much comes from 300 steps vs the bigger, longer-trained model? -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Whether the new model beats the samples in Fig. 27, and how much of the change comes from the 300-step sampler rather than the larger, longer-trained model.</p>
+      <div class="prose">
+        <p>The sampler was not the bottleneck. The 2.2 model with 300 steps (first grid) is almost indistinguishable from its 50-step samples in Fig. 27, so the learned flow is close to straight and 50 Euler steps already follow it well.</p>
+        <p>The wider, longer-trained model does help, but modestly. Several ambiguous cells become clear digits: the B-shaped 8 in the top row becomes a 4, the looped 7 near the end of the top row becomes a 9, and the y-shape that starts the third row becomes a 4. Strokes are a little smoother overall. But the squiggle in the second row and the broken stroke in the third row are still not digits, the 6 near the end of the bottom row got worse, and the grid is still well short of the class-conditioned samples. The loss curve has one brief spike around step 4,000 and recovers. So nearly all of the gain comes from the bigger model and longer training rather than the sampler, and conditioning on the class matters far more than either.</p>
       </div>
     </section>
 
