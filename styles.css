@@ -967,26 +967,30 @@ button { font: inherit; }
    These overrides are scoped so the shared project index keeps its original
    proportions. */
 .project-page--1 .sheet,
-.project-page--2 .sheet {
+.project-page--2 .sheet,
+.project-page--3 .sheet {
   --sheet: 68rem;
   --measure: 58ch;
   padding-inline: clamp(1.1rem, 4vw, 3rem);
 }
 
 .project-page--1 .masthead,
-.project-page--2 .masthead {
+.project-page--2 .masthead,
+.project-page--3 .masthead {
   max-width: 60rem;
   margin-inline: auto;
   text-align: center;
 }
 
 .project-page--1 .masthead__meta,
-.project-page--2 .masthead__meta {
+.project-page--2 .masthead__meta,
+.project-page--3 .masthead__meta {
   text-align: left;
 }
 
 .project-page--1 .masthead__title,
-.project-page--2 .masthead__title {
+.project-page--2 .masthead__title,
+.project-page--3 .masthead__title {
   max-width: 15ch;
   margin-inline: auto;
   font-size: clamp(2.45rem, 1.8rem + 4.4vw, 5.15rem);
@@ -994,55 +998,69 @@ button { font: inherit; }
 
 .project-page--1 .byline,
 .project-page--2 .byline,
+.project-page--3 .byline,
 .project-page--1 .dateline,
-.project-page--2 .dateline {
+.project-page--2 .dateline,
+.project-page--3 .dateline {
   margin-inline: auto;
 }
 
 .project-page--1 .prose,
 .project-page--2 .prose,
+.project-page--3 .prose,
 .project-page--1 .formula,
 .project-page--2 .formula,
+.project-page--3 .formula,
 .project-page--1 .contents,
-.project-page--2 .contents {
+.project-page--2 .contents,
+.project-page--3 .contents {
   max-width: min(var(--measure), 100%);
 }
 
 .project-page--1 .pair,
-.project-page--2 .pair {
+.project-page--2 .pair,
+.project-page--3 .pair {
   max-width: 52rem;
   gap: clamp(.75rem, 2vw, 1.25rem);
 }
 
 .project-page--1 .pair--3,
-.project-page--2 .pair--3 {
+.project-page--2 .pair--3,
+.project-page--3 .pair--3 {
   max-width: 58rem;
 }
 
 .project-page--1 .plate.solo--wide,
 .project-page--2 .plate.solo--wide,
+.project-page--3 .plate.solo--wide,
 .project-page--1 .sequence,
 .project-page--2 .sequence,
+.project-page--3 .sequence,
 .project-page--1 .ledger-wrap,
 .project-page--2 .ledger-wrap,
+.project-page--3 .ledger-wrap,
 .project-page--1 .ledger__note,
-.project-page--2 .ledger__note {
+.project-page--2 .ledger__note,
+.project-page--3 .ledger__note {
   max-width: 58rem;
 }
 
 @media (max-width: 700px) {
   .project-page--1 .masthead__title,
-  .project-page--2 .masthead__title {
+  .project-page--2 .masthead__title,
+  .project-page--3 .masthead__title {
     max-width: 12ch;
   }
 
   .project-page--1 .masthead__meta,
-  .project-page--2 .masthead__meta {
+  .project-page--2 .masthead__meta,
+  .project-page--3 .masthead__meta {
     justify-content: center;
   }
 
   .project-page--1 .prose,
-  .project-page--2 .prose {
+  .project-page--2 .prose,
+  .project-page--3 .prose {
     max-width: 37rem;
   }
 }
@@ -1105,9 +1123,10 @@ button { font: inherit; }
    sigma does not turn into a summation sign. */
 .nocase { text-transform: none; }
 
-/* On project 2 every subheading follows other content, so it keeps its
-   space above even when it opens a new prose block. */
-.project-page--2 .prose h3:first-child { margin-top: 2.4rem; }
+/* On projects 2 and 3 every subheading follows other content, so it keeps
+   its space above even when it opens a new prose block. */
+.project-page--2 .prose h3:first-child,
+.project-page--3 .prose h3:first-child { margin-top: 2.4rem; }
 
 /* Project 2 is figure-heavy, so it runs more compact: figures share rows,
    and single figures are capped well below the sheet width. */
@@ -1133,13 +1152,41 @@ button { font: inherit; }
   .strip > .plate { flex-basis: 100%; }
 }
 
-.project-page--2 .pair { max-width: 46rem; margin-bottom: 1.25rem; }
+.project-page--2 .pair,
+.project-page--3 .pair { max-width: 46rem; margin-bottom: 1.25rem; }
 .project-page--2 .pair--3,
-.project-page--2 .pair--4 { max-width: 54rem; }
-.project-page--2 .plate.solo { max-width: 38rem; margin-bottom: 1.25rem; }
-.project-page--2 .plate.solo--wide { max-width: 52rem; }
-.project-page--2 .plate.solo--narrow { max-width: 22rem; }
+.project-page--3 .pair--3,
+.project-page--2 .pair--4,
+.project-page--3 .pair--4,
+.project-page--3 .pair--5 { max-width: 54rem; }
+.project-page--2 .plate.solo,
+.project-page--3 .plate.solo { max-width: 38rem; margin-bottom: 1.25rem; }
+.project-page--2 .plate.solo--wide,
+.project-page--3 .plate.solo--wide { max-width: 52rem; }
+.project-page--2 .plate.solo--narrow,
+.project-page--3 .plate.solo--narrow { max-width: 22rem; }
 
 @media print {
   .strip > .plate { break-inside: avoid; }
 }
+
+/* Project 3 runs in two halves, so the contents list is split in two,
+   each with its own small label. */
+.contents__label { margin-bottom: .55rem; }
+.contents + .contents { margin-top: 1.4rem; }
+
+/* Five samples from five seeds share one row; three across on a phone. */
+.pair--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 620px) {
+  .pair--5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* A hybrid shown at shrinking sizes. The point of the row is the size
+   difference, so it keeps its proportions on a phone instead of wrapping. */
+@media (max-width: 620px) {
+  .strip--keep { flex-wrap: nowrap; }
+  .strip--keep > .plate { flex-basis: 0; }
+}
+
+/* Placeholder labels carry file names, which have no spaces to break at. */
+.plate__ph { overflow-wrap: anywhere; }

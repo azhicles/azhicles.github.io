@@ -23,11 +23,12 @@
        false  a photo that fails to load is removed along with its figure,
               so an unused slot never reaches the printed PDF.
 
-     All the photographs exist now, so this stays false. Set it to true, or
-     load the page with ?preview=1, if you ever add empty slots for a shoot
-     that has not happened yet.
+     Off by default. A page whose figures are still being produced opts in
+     with a data-preview attribute on its <body>, so its empty slots show a
+     placeholder until the real image is copied into place. Loading any page
+     with ?preview=1 or ?preview=0 overrides this.
      ------------------------------------------------------------------------ */
-  var PREVIEW = false;
+  var PREVIEW = document.body.hasAttribute('data-preview');
 
   var override = new URLSearchParams(window.location.search).get('preview');
   if (override !== null) {
