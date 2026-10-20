@@ -20,9 +20,7 @@
 <script src="../scripts.js?v=3" defer></script>
 </head>
 
-<!-- data-preview keeps a labelled placeholder in every figure whose image is
-     not in media/ yet. Remove it once every result has been copied in. -->
-<body class="project-page project-page--3" data-preview>
+<body class="project-page project-page--3">
 <a class="skip" href="#main">Skip to content</a>
 
 <nav class="tocnav" aria-label="Sections">
@@ -72,11 +70,6 @@
       <p>To generate, the model starts from noise at <span class="num">t = 0</span> and follows its own velocity field to <span class="num">t = 1</span>. Each training pair is a straight path, but the learned field bends, because the predicted direction depends on where you are. So sampling integrates it in small steps.</p>
     </div>
 
-    <!-- PENDING-OBS: page status. Part B is in; delete this note once the Part A results are in too. -->
-    <div class="note">
-      <span class="note__label">Status</span>
-      <p>The Part B results are in. Part A is being re-run, so its figures show a hatched &ldquo;result pending&rdquo; box and its notes are marked as pending until the new results are added.</p>
-    </div>
 
     <nav class="contents" aria-label="Contents, Part A">
       <p class="eyebrow contents__label">Part A &middot; Exploring the power of flow models</p>
@@ -135,7 +128,7 @@
 
       <p class="fig-label">Fig. 02 &middot; The forward process with one noise sample</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/training_inputs.png</div><img src="media/parta/training_inputs.png" alt="The Pixar Pier photo, then the same photo interpolated with one noise sample at t equals 0.25, 0.50 and 0.75."></div>
+        <div class="plate__well"><img src="media/parta/training_inputs.jpg" alt="The Pixar Pier photo, then the same photo interpolated with one noise sample at t equals 0.25, 0.50 and 0.75."></div>
         <figcaption><span class="plate__label">Original, t = 0.25, 0.50, 0.75</span><span class="spec">noise seed 180</span></figcaption>
       </figure>
     </section>
@@ -163,23 +156,21 @@
       <p class="fig-label">Fig. 03 &middot; Noisy input and the best Gaussian blur</p>
       <div class="pair pair--3">
         <figure class="plate fit-contain" style="--ratio: 880 / 440">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/blur_0.25.png</div><img src="media/parta/blur_0.25.png" alt="The t equals 0.25 noisy input beside its best Gaussian blur."></div>
+          <div class="plate__well"><img src="media/parta/blur_0.25.jpg" alt="The t equals 0.25 noisy input beside its best Gaussian blur."></div>
           <figcaption><span class="plate__label">t = 0.25</span><span class="spec">noisy &middot; blurred</span></figcaption>
         </figure>
         <figure class="plate fit-contain" style="--ratio: 880 / 440">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/blur_0.5.png</div><img src="media/parta/blur_0.5.png" alt="The t equals 0.50 noisy input beside its best Gaussian blur."></div>
+          <div class="plate__well"><img src="media/parta/blur_0.5.jpg" alt="The t equals 0.50 noisy input beside its best Gaussian blur."></div>
           <figcaption><span class="plate__label">t = 0.50</span><span class="spec">noisy &middot; blurred</span></figcaption>
         </figure>
         <figure class="plate fit-contain" style="--ratio: 880 / 440">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/blur_0.75.png</div><img src="media/parta/blur_0.75.png" alt="The t equals 0.75 noisy input beside its best Gaussian blur."></div>
+          <div class="plate__well"><img src="media/parta/blur_0.75.jpg" alt="The t equals 0.75 noisy input beside its best Gaussian blur."></div>
           <figcaption><span class="plate__label">t = 0.75</span><span class="spec">noisy &middot; blurred</span></figcaption>
         </figure>
       </div>
 
-      <!-- PENDING-OBS: 1.2 which sigma won at each t; what the blur keeps and loses. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Which &sigma; the sweep picked at each t, and what the blur keeps and loses.</p>
+      <div class="prose">
+        <p>The sweep picked &sigma; = 8 at t = 0.25, &sigma; = 2 at 0.50 and &sigma; = 1 at 0.75. At 0.25 that leaves the two arcs of the roller coaster and blotches of colour; the wheel, Mickey and the whole foreground are gone. At 0.50 the spokes and Mickey's ears survive under coloured grain, and at 0.75 a light blur removes most of the noise and keeps nearly all the detail. Blur can only trade noise for detail. It has no idea what a Ferris wheel looks like.</p>
       </div>
 
       <div class="prose">
@@ -202,22 +193,20 @@ def one_step_denoise(x, t, condition, predict_velocity):
 
       <p class="fig-label">Fig. 04 &middot; Original, noisy input and one-step estimate</p>
       <figure class="plate solo fit-contain" style="--ratio: 1320 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/one_step_0.25.png</div><img src="media/parta/one_step_0.25.png" alt="Original photo, the t equals 0.25 noisy input, and the one-step estimate."></div>
+        <div class="plate__well"><img src="media/parta/one_step_0.25.jpg" alt="Original photo, the t equals 0.25 noisy input, and the one-step estimate."></div>
         <figcaption><span class="plate__label">t = 0.25</span><span class="spec">original &middot; noisy &middot; one step</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1320 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/one_step_0.5.png</div><img src="media/parta/one_step_0.5.png" alt="Original photo, the t equals 0.50 noisy input, and the one-step estimate."></div>
+        <div class="plate__well"><img src="media/parta/one_step_0.5.jpg" alt="Original photo, the t equals 0.50 noisy input, and the one-step estimate."></div>
         <figcaption><span class="plate__label">t = 0.50</span><span class="spec">original &middot; noisy &middot; one step</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1320 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/one_step_0.75.png</div><img src="media/parta/one_step_0.75.png" alt="Original photo, the t equals 0.75 noisy input, and the one-step estimate."></div>
+        <div class="plate__well"><img src="media/parta/one_step_0.75.jpg" alt="Original photo, the t equals 0.75 noisy input, and the one-step estimate."></div>
         <figcaption><span class="plate__label">t = 0.75</span><span class="spec">original &middot; noisy &middot; one step</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 1.3 one-step vs blur at each t; what the model invents at t = 0.25. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the one-step estimate compares with the blur at each t, and what the model invents at t = 0.25.</p>
+      <div class="prose">
+        <p>One step beats blur at every time, in a different way. At 0.25 no noise is left at all, but the estimate is a smooth, blurry average: the wheel, the coaster and the lamps are in the right places, Mickey is a grey smudge, and the lattice and tables are smeared into streaks. A single jump lands on the model's guess of the average of all the clean images that could explain this input, and at 0.25 that is a lot of images. At 0.50 Mickey's face comes back, though the Pixar Pier sign is a plain orange disc, and at 0.75 the estimate is hard to tell from the original.</p>
       </div>
     </section>
 
@@ -249,28 +238,26 @@ def one_step_denoise(x, t, condition, predict_velocity):
 
       <p class="fig-label">Fig. 05 &middot; The clean photo, shown once</p>
       <figure class="plate solo solo--narrow ratio-square">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/velocity_original.png</div><img src="media/parta/velocity_original.png" alt="The 512 by 512 crop of the Pixar Pier photo."></div>
+        <div class="plate__well"><img src="media/parta/velocity_original.jpg" alt="The 512 by 512 crop of the Pixar Pier photo."></div>
         <figcaption><span class="plate__label nocase">x&#8321;</span><span class="spec">512 &times; 512</span></figcaption>
       </figure>
 
       <p class="fig-label">Fig. 06 &middot; Noisy input, predicted update, true update, error</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/velocity_0.25.png</div><img src="media/parta/velocity_0.25.png" alt="At t equals 0.25: noisy image, predicted update, ground-truth update and RMS error map."></div>
+        <div class="plate__well"><img src="media/parta/velocity_0.25.jpg" alt="At t equals 0.25: noisy image, predicted update, ground-truth update and RMS error map."></div>
         <figcaption><span class="plate__label">t = 0.25</span><span class="spec nocase">x_t &middot; (1 &minus; t)v&#770; &middot; (1 &minus; t)v_gt &middot; E_t</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/velocity_0.50.png</div><img src="media/parta/velocity_0.50.png" alt="At t equals 0.50: noisy image, predicted update, ground-truth update and RMS error map."></div>
+        <div class="plate__well"><img src="media/parta/velocity_0.50.jpg" alt="At t equals 0.50: noisy image, predicted update, ground-truth update and RMS error map."></div>
         <figcaption><span class="plate__label">t = 0.50</span><span class="spec nocase">x_t &middot; (1 &minus; t)v&#770; &middot; (1 &minus; t)v_gt &middot; E_t</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/velocity_0.75.png</div><img src="media/parta/velocity_0.75.png" alt="At t equals 0.75: noisy image, predicted update, ground-truth update and RMS error map."></div>
+        <div class="plate__well"><img src="media/parta/velocity_0.75.jpg" alt="At t equals 0.75: noisy image, predicted update, ground-truth update and RMS error map."></div>
         <figcaption><span class="plate__label">t = 0.75</span><span class="spec nocase">x_t &middot; (1 &minus; t)v&#770; &middot; (1 &minus; t)v_gt &middot; E_t</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 1.4 where the error concentrates and how it changes with t. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Where the error concentrates (edges, fine detail, flat sky) and how it changes from t = 0.25 to 0.75.</p>
+      <div class="prose">
+        <p>The error is almost zero in the sky and concentrates on fine, high-contrast detail: the spokes, the coaster's lattice, Mickey's face, the sign and the edges of the tables. That matches 1.3. The predicted update gets the broad shapes and colours right and smooths over whatever the noise hides. The maps get darker as t grows, because the update is scaled by 1 &minus; t and because there is less left to guess.</p>
       </div>
     </section>
 
@@ -311,20 +298,19 @@ def euler_sample(x_start, t_start, step_size, velocity):
 
       <p class="fig-label">Fig. 07 &middot; The Euler trajectory from t = 0.50</p>
       <figure class="plate solo fit-contain" style="--ratio: 1320 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/trajectory.png</div><img src="media/parta/trajectory.png" alt="The Euler trajectory: the state at t equals 0.50, 0.60, 0.70, 0.80, 0.90 and 1.00."></div>
+        <div class="plate__well"><img src="media/parta/trajectory.jpg" alt="The Euler trajectory: the state at t equals 0.50, 0.60, 0.70, 0.80, 0.90 and 1.00."></div>
         <figcaption><span class="plate__label">t = 0.50, 0.60, 0.70, 0.80, 0.90, 1.00</span><span class="spec">every fifth update</span></figcaption>
       </figure>
 
       <p class="fig-label">Fig. 08 &middot; Three denoisers on the same t = 0.50 input</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/comparison.png</div><img src="media/parta/comparison.png" alt="The original photo, the best Gaussian blur, the one-step estimate and the Euler result, all from the t equals 0.50 input."></div>
+        <div class="plate__well"><img src="media/parta/comparison.jpg" alt="The original photo, the best Gaussian blur, the one-step estimate and the Euler result, all from the t equals 0.50 input."></div>
         <figcaption><span class="plate__label">Original &middot; blur &middot; one step &middot; Euler</span><span class="spec">t = 0.50 input</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 1.5 how the trajectory sharpens; Euler vs one step vs blur; the three MSEs from metrics.json ("reconstruction_mse"). -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the image sharpens along the trajectory, how Euler compares with one step and blur, and each method's mean squared error to the original.</p>
+      <div class="prose">
+        <p>The noise fades steadily along the trajectory. By t = 0.80 the photo is mostly clean, and the last steps remove the remaining grain while the lattice, the people and the chairs sharpen.</p>
+        <p>On the same input, blur is far behind, with a mean squared error to the original of 0.0573. One step scores 0.0206 and Euler 0.0243, so Euler is slightly worse by this measure, even though it is visibly sharper: the lattice, the people and the chairs are crisp where one step is soft. Neither is exact; both bring the sign back as a plain orange disc. MSE prefers the blurry answer. A sharp detail in slightly the wrong place is penalised twice, once for missing the true edge and once for drawing a false one, while a blur is never far wrong. One step lands near the average of the plausible images; Euler commits to one sharp image, and its invented details do not line up with the photo pixel for pixel.</p>
       </div>
     </section>
 
@@ -345,31 +331,29 @@ def euler_sample(x_start, t_start, step_size, velocity):
       <p class="fig-label">Fig. 09 &middot; Five samples, no guidance</p>
       <div class="pair pair--5">
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/conditional_0.png" alt="Sample from seed 180 with the prompt a high quality photo, no guidance."></div>
+          <div class="plate__well"><img src="media/parta/conditional_0.jpg" alt="Sample from seed 180 with the prompt a high quality photo, no guidance."></div>
           <figcaption><span class="plate__label">Seed 180</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/conditional_1.png" alt="Sample from seed 181 with the prompt a high quality photo, no guidance."></div>
+          <div class="plate__well"><img src="media/parta/conditional_1.jpg" alt="Sample from seed 181 with the prompt a high quality photo, no guidance."></div>
           <figcaption><span class="plate__label">Seed 181</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/conditional_2.png" alt="Sample from seed 182 with the prompt a high quality photo, no guidance."></div>
+          <div class="plate__well"><img src="media/parta/conditional_2.jpg" alt="Sample from seed 182 with the prompt a high quality photo, no guidance."></div>
           <figcaption><span class="plate__label">Seed 182</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/conditional_3.png" alt="Sample from seed 183 with the prompt a high quality photo, no guidance."></div>
+          <div class="plate__well"><img src="media/parta/conditional_3.jpg" alt="Sample from seed 183 with the prompt a high quality photo, no guidance."></div>
           <figcaption><span class="plate__label">Seed 183</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/conditional_4.png" alt="Sample from seed 184 with the prompt a high quality photo, no guidance."></div>
+          <div class="plate__well"><img src="media/parta/conditional_4.jpg" alt="Sample from seed 184 with the prompt a high quality photo, no guidance."></div>
           <figcaption><span class="plate__label">Seed 184</span></figcaption>
         </figure>
       </div>
 
-      <!-- PENDING-OBS: 1.6 which subjects the generic prompt produces; image quality. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Which subjects the generic prompt tends to produce, and how photographic the samples look.</p>
+      <div class="prose">
+        <p>Every sample is a portrait of a person, so for this model &ldquo;a high quality photo&rdquo; apparently means a photo of someone. Without guidance the quality is mixed. Seed 182 (a woman with her hand at her cheek) and seed 184 (a man in a grey T-shirt) look like real photos, but seed 180 has hair and no face, seed 183's face looks melted, and seed 181's torso has mottled, warped skin.</p>
       </div>
 
       <div class="prose">
@@ -390,31 +374,29 @@ def euler_sample(x_start, t_start, step_size, velocity):
       <p class="fig-label">Fig. 10 &middot; The same five noises with guidance</p>
       <div class="pair pair--5">
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/cfg_0.png" alt="Sample from seed 180 with classifier-free guidance, w equals 7."></div>
+          <div class="plate__well"><img src="media/parta/cfg_0.jpg" alt="Sample from seed 180 with classifier-free guidance, w equals 7."></div>
           <figcaption><span class="plate__label">Seed 180</span><span class="spec">w = 7</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/cfg_1.png" alt="Sample from seed 181 with classifier-free guidance, w equals 7."></div>
+          <div class="plate__well"><img src="media/parta/cfg_1.jpg" alt="Sample from seed 181 with classifier-free guidance, w equals 7."></div>
           <figcaption><span class="plate__label">Seed 181</span><span class="spec">w = 7</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/cfg_2.png" alt="Sample from seed 182 with classifier-free guidance, w equals 7."></div>
+          <div class="plate__well"><img src="media/parta/cfg_2.jpg" alt="Sample from seed 182 with classifier-free guidance, w equals 7."></div>
           <figcaption><span class="plate__label">Seed 182</span><span class="spec">w = 7</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/cfg_3.png" alt="Sample from seed 183 with classifier-free guidance, w equals 7."></div>
+          <div class="plate__well"><img src="media/parta/cfg_3.jpg" alt="Sample from seed 183 with classifier-free guidance, w equals 7."></div>
           <figcaption><span class="plate__label">Seed 183</span><span class="spec">w = 7</span></figcaption>
         </figure>
         <figure class="plate ratio-square">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b></div><img src="media/parta/cfg_4.png" alt="Sample from seed 184 with classifier-free guidance, w equals 7."></div>
+          <div class="plate__well"><img src="media/parta/cfg_4.jpg" alt="Sample from seed 184 with classifier-free guidance, w equals 7."></div>
           <figcaption><span class="plate__label">Seed 184</span><span class="spec">w = 7</span></figcaption>
         </figure>
       </div>
 
-      <!-- PENDING-OBS: 2.1 CFG vs 1.6 on the same seeds: quality, prompt alignment, diversity. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How the guided samples differ from Fig. 09 on the same seeds: quality, how well they match the prompt, and how much variety is left.</p>
+      <div class="prose">
+        <p>Guidance fixes every failure. All five are clean, evenly lit headshots with sharp eyes and skin, including the three seeds that were distorted without it. Some of the starting point survives: seed 182 keeps the hand at the cheek and seed 184 the T-shirt against a light background. But the samples are also more alike: all five face the camera from the same distance against a plain backdrop, most with a slight smile, in more saturated colour. That is the trade CFG makes, better images that match the prompt more closely in exchange for variety.</p>
       </div>
     </section>
 
@@ -471,22 +453,20 @@ def euler_sample(x_start, t_start, step_size, velocity):
 
       <p class="fig-label">Fig. 12 &middot; Edits with &ldquo;a high quality photo&rdquo;, most noise to least</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_campanile.png</div><img src="media/parta/edit_campanile.png" alt="The Campanile and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_campanile.jpg" alt="The Campanile and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Campanile</span><span class="spec">original, t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_disneyland.png</div><img src="media/parta/edit_disneyland.png" alt="The Pixar Pier photo and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_disneyland.jpg" alt="The Pixar Pier photo and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Pixar Pier</span><span class="spec">original, t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_star_wars.png</div><img src="media/parta/edit_star_wars.png" alt="The Millennium Falcon photo and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_star_wars.jpg" alt="The Millennium Falcon photo and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Millennium Falcon</span><span class="spec">original, t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 3.1 photos: what each starting time produces; where the original comes back. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>What the low starting times turn each photo into, and at which time the original comes back.</p>
+      <div class="prose">
+        <p>At the lowest starting times almost nothing of the input survives. From 0.02 the Campanile becomes a smooth white pillar against a blurred blue background, Pixar Pier becomes a portrait of a man in glasses, and the Falcon a framed picture of skyscrapers on a desk. Between 0.04 and 0.14 the edits keep the composition and colours but swap the content. The Campanile turns into a plain obelisk with a single window. Pixar Pier becomes a monitor in front of a hazy city, then hands tangled in cables, then at 0.14 a brown wooden pavilion where the coaster and wheel were. Galaxy's Edge becomes modern concrete buildings and then a blurred palace. The originals return at 0.25 in simplified form: the belfry arches are back but the clock is a smudge, and the hub of the wheel has no Mickey. At 0.50 all three are close to the photos.</p>
       </div>
 
       <div class="prose">
@@ -496,22 +476,21 @@ def euler_sample(x_start, t_start, step_size, velocity):
 
       <p class="fig-label">Fig. 13 &middot; The same sweep on a web image and two drawings</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_perry.png</div><img src="media/parta/edit_perry.png" alt="The Perry meme and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_perry.jpg" alt="The Perry meme and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Perry meme</span><span class="spec">web &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_spike.png</div><img src="media/parta/edit_spike.png" alt="The Spike painting and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_spike.jpg" alt="The Spike painting and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Spike</span><span class="spec">painting &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/edit_mbs.png</div><img src="media/parta/edit_mbs.png" alt="The Marina Bay Sands painting and its edits from starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/edit_mbs.jpg" alt="The Marina Bay Sands painting and its edits from starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Marina Bay Sands</span><span class="spec">painting &middot; t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 3.1 web image and paintings: what the model reads the flat shapes and brush strokes as. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>What the model reads the flat shapes and brush strokes as at each starting time.</p>
+      <div class="prose">
+        <p>The flat images show the manifold most clearly. From 0.02 to 0.06 all three are replaced. The meme becomes a blank curling sheet of paper, then a magazine page with photos of faces in its panels. Spike becomes portraits of people, a woman with crossed arms and then figures in grey hats and hoodies, keeping only his palette. Marina Bay Sands becomes a tablet and then a blue billboard by a road.</p>
+        <p>The best range is 0.10 to 0.14, where the model keeps each layout but makes it physical. Spike turns into a felt plush toy with his flower as a pink box, Marina Bay Sands into a grey concrete arcade standing beside a road, and Phineas's tuft of hair into a black metal nozzle on a paper cone. By 0.25 all three return almost unchanged, a little smoother than the originals.</p>
       </div>
     </section>
 
@@ -541,22 +520,21 @@ def euler_sample(x_start, t_start, step_size, velocity):
 
       <p class="fig-label">Fig. 14 &middot; Text-guided edits, most noise to least</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/text_edit_campanile.png</div><img src="media/parta/text_edit_campanile.png" alt="The Campanile edited toward a giant rocket on a launch pad, starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/text_edit_campanile.jpg" alt="The Campanile edited toward a giant rocket on a launch pad, starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Campanile &rarr; &ldquo;a photograph of a giant rocket on a launch pad&rdquo;</span><span class="spec">t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/text_edit_disneyland.png</div><img src="media/parta/text_edit_disneyland.png" alt="Pixar Pier edited toward a spooky abandoned carnival in fog, starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/text_edit_disneyland.jpg" alt="Pixar Pier edited toward a spooky abandoned carnival in fog, starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Pixar Pier &rarr; &ldquo;a spooky abandoned carnival at night in thick fog, horror movie still&rdquo;</span><span class="spec">t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/text_edit_star_wars.png</div><img src="media/parta/text_edit_star_wars.png" alt="The Millennium Falcon edited toward a LEGO diorama, starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/text_edit_star_wars.jpg" alt="The Millennium Falcon edited toward a LEGO diorama, starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">Millennium Falcon &rarr; &ldquo;a LEGO diorama of a spaceship parked among rocky spires&rdquo;</span><span class="spec">t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 3.2 at which starting times each prompt wins, and where the best mix of layout and prompt is. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>At which starting times each prompt takes over, and which time gives the best mix of the original layout and the prompt.</p>
+      <div class="prose">
+        <p>Each prompt takes over at the low starting times and loses by 0.50. The rocket wins completely at 0.02, with a gantry and a full launch pad. From 0.06 to 0.14 the result keeps the Campanile's framing: the shaft becomes the rocket's body, the belfry becomes a coloured band near the nose, and the trees turn into launch machinery. At 0.25 the belfry arches are back on a rocket-like shaft.</p>
+        <p>For Pixar Pier the low times give foggy carousels with nothing of the photo, but 0.10 and 0.14 are a good mix: the coaster and the wheel stay, Mickey's face becomes a grinning skull, and at 0.10 a lone figure stands in the fog. At 0.25 Mickey is back with a sinister grin. The LEGO prompt is the most successful. Every time up to 0.25 is recognisably made of bricks, from a toy ship with minifigures at 0.02 to a brick Falcon in front of the real spires at 0.25, with a minifigure standing where the bollard was. The best mixes are around 0.14 for the rocket, 0.10 for the carnival and 0.25 for the LEGO Falcon.</p>
       </div>
     </section>
 
@@ -592,18 +570,16 @@ def visual_anagrams(noise, condition_a, condition_b, predict_velocity, w=7, step
 
       <p class="fig-label">Fig. 15 &middot; Upright and turned 180&deg;</p>
       <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_views_0.png</div><img src="media/parta/anagram_views_0.png" alt="Visual anagram: upright, an oil painting of a bowl of vegetables; rotated 180 degrees, an oil painting of a bearded gardener's face."></div>
+        <div class="plate__well"><img src="media/parta/anagram_views_0.jpg" alt="Visual anagram: upright, an oil painting of a bowl of vegetables; rotated 180 degrees, an oil painting of a bearded gardener's face."></div>
         <figcaption><span class="plate__label">&ldquo;an oil painting of a bowl of vegetables&rdquo; &middot; turned: &ldquo;an oil painting of a bearded gardener's face&rdquo;</span><span class="spec">seed 180</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_views_1.png</div><img src="media/parta/anagram_views_1.png" alt="Visual anagram: upright, a watercolor painting of a castle on a hill; rotated 180 degrees, a watercolor painting of a dragon."></div>
+        <div class="plate__well"><img src="media/parta/anagram_views_1.jpg" alt="Visual anagram: upright, a watercolor painting of a castle on a hill; rotated 180 degrees, a watercolor painting of a dragon."></div>
         <figcaption><span class="plate__label">&ldquo;a watercolor painting of a castle on a hill&rdquo; &middot; turned: &ldquo;a watercolor painting of a dragon&rdquo;</span><span class="spec">seed 181</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: 3.3 whether both readings work for each anagram; any reruns needed. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How well each reading works in each orientation, and whether either pair needed another seed.</p>
+      <div class="prose">
+        <p>The first anagram works. Upright it is a bowl of fruit and vegetables with leaves. Turned over, the pale fruit at the top becomes a bald head and nose, the red peppers and cherries become cheeks and lips, the leaves become a beard and the rim of the bowl a hat. The face is rougher than the bowl. The castle and dragon are weaker: most of the frame is empty paper, the castle is small but readable, and turned over the yellow washes become two wings over a hanging body, which suggests a dragon more than it shows one.</p>
       </div>
 
       <div class="prose">
@@ -615,8 +591,7 @@ def visual_anagrams(noise, condition_a, condition_b, predict_velocity, w=7, step
       </div>
       <div class="prose">
         <p>The low-pass is a Gaussian blur with &sigma; = 16 and a 265-pixel kernel at 512 &times; 512. It filters the velocities, not the finished image, so the two prompts negotiate the image throughout sampling instead of being glued together at the end. The first prompt sets what you see from far away and the second the detail up close.</p>
-        <!-- PENDING-OBS: 3.4 the two final prompt pairs and why I chose them (also the Fig. 16 and 17 labels and captions). -->
-        <p>The prompt pairs: (prompt to be updated).</p>
+        <p>I kept every prompt a lithograph so the two halves share one style, and tried three pairs with three seeds each, nine candidates in all. Two pairs worked: a panda's face from afar with a snowy pine forest up close, and a human eye from afar with a whirlpool in the ocean up close. I picked seed 182 for both. The third pair, an old bearded man's face from afar with a rocky mountain range up close, failed on all three seeds: the mountains took over and no face appeared at any size.</p>
       </div>
 <pre class="codeblock"><code>def lowpass(x, sigma=16.0):                          # kernel 265 at 512 x 512
     kernel = 2 * round(16.5 * x.shape[-1] / 64) + 1
@@ -631,33 +606,33 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
     x, _ = euler_sample(noise, 0, step_size, velocity)
     return x</code></pre>
 
-      <p class="fig-label">Fig. 16 &middot; Hybrid 1 &middot; (prompt to be updated)</p>
+      <p class="fig-label">Fig. 16 &middot; Up close: a snowy pine forest &middot; from afar: a panda's face</p>
       <div class="strip strip--narrow strip--keep">
         <figure class="plate ratio-square" style="--w: 1">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_0.png</div><img src="media/parta/hybrid_0.png" alt="The first hybrid image at full size."></div>
-          <figcaption><span class="plate__label">Full size</span><span class="spec">(prompt to be updated)</span></figcaption>
+          <div class="plate__well"><img src="media/parta/hybrid_0.jpg" alt="Hybrid at full size: a lithograph of a snowy pine forest with five bushy black tree clumps above it, which from a distance form the ears, eye patches and nose of a panda."></div>
+          <figcaption><span class="plate__label">Full size</span><span class="spec">seed 182</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .25">
-          <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_0.png" alt="The same hybrid at a quarter size."></div>
+          <div class="plate__well"><img src="media/parta/hybrid_0.jpg" alt="The same hybrid at a quarter size."></div>
           <figcaption><span class="plate__label">1/4</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .125">
-          <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_0.png" alt="The same hybrid at an eighth size, where only the low frequencies are visible."></div>
+          <div class="plate__well"><img src="media/parta/hybrid_0.jpg" alt="The same hybrid at an eighth size, where only the low frequencies are visible."></div>
           <figcaption><span class="plate__label">1/8</span></figcaption>
         </figure>
       </div>
-      <p class="fig-label">Fig. 17 &middot; Hybrid 2 &middot; (prompt to be updated)</p>
+      <p class="fig-label">Fig. 17 &middot; Up close: a whirlpool &middot; from afar: a human eye</p>
       <div class="strip strip--narrow strip--keep">
         <figure class="plate ratio-square" style="--w: 1">
-          <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/hybrid_1.png</div><img src="media/parta/hybrid_1.png" alt="The second hybrid image at full size."></div>
-          <figcaption><span class="plate__label">Full size</span><span class="spec">(prompt to be updated)</span></figcaption>
+          <div class="plate__well"><img src="media/parta/hybrid_1.jpg" alt="Hybrid at full size: a lithograph of a curling wave around a whirlpool, whose dark centre reads as the pupil of an eye from a distance."></div>
+          <figcaption><span class="plate__label">Full size</span><span class="spec">seed 182</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .25">
-          <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_1.png" alt="The same hybrid at a quarter size."></div>
+          <div class="plate__well"><img src="media/parta/hybrid_1.jpg" alt="The same hybrid at a quarter size."></div>
           <figcaption><span class="plate__label">1/4</span></figcaption>
         </figure>
         <figure class="plate ratio-square" style="--w: .125">
-          <div class="plate__well"><div class="plate__ph"></div><img src="media/parta/hybrid_1.png" alt="The same hybrid at an eighth size, where only the low frequencies are visible."></div>
+          <div class="plate__well"><img src="media/parta/hybrid_1.jpg" alt="The same hybrid at an eighth size, where only the low frequencies are visible."></div>
           <figcaption><span class="plate__label">1/8</span></figcaption>
         </figure>
       </div>
@@ -665,10 +640,17 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
         <p>Each hybrid is one 512 &times; 512 image, shown three times at shrinking sizes to stand in for stepping back from it. The notebook's own distant view is a 64 &times; 64 copy, close to the size of the smallest one here.</p>
       </div>
 
-      <!-- PENDING-OBS: 3.4 how each hybrid reads up close and when the distant prompt takes over. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How each hybrid reads up close, and at what size the distant prompt takes over.</p>
+      <div class="prose">
+        <p>The panda works well. Up close it is a row of pines along the bottom, five bushy black tree clumps floating above them and a frame drawn like bark. From a distance the clumps become the ears, eye patches and nose of a panda on a white face. The eye is less of a switch: up close it is a curling wave around a whirlpool, but the whirlpool's black centre already reads as a pupil at full size. Shrinking it mostly removes the water texture until only the eye is left.</p>
+      </div>
+
+      <p class="fig-label">Fig. 18 &middot; All three seeds for the panda pair, close and at 64 px</p>
+      <figure class="plate solo fit-contain" style="--ratio: 1320 / 880">
+        <div class="plate__well"><img src="media/parta/hybrid_candidates_0.jpg" alt="Three panda and pine forest hybrids, seeds 180 to 182, each shown close up and at 64 pixels."></div>
+        <figcaption><span class="plate__label">Seeds 180, 181, 182</span><span class="spec">close &middot; far (64 px)</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>All three seeds read as a panda from far away. In seed 180 the trees are simply drawn inside the outline of a face, and in 181 each eye patch is a whole pine tree. Seed 182 hides the face best, which is why I kept it.</p>
       </div>
     </section>
 
@@ -697,8 +679,8 @@ def make_hybrids(noise, condition_a, condition_b, predict_velocity, w=7, step_si
       <div class="prose">
         <p>I generalised <span class="num">visual_anagrams</span> into <span class="num">anagram_view</span>, which takes a view and its inverse, and picked two views:</p>
         <ul>
-          <li><strong>Rotation by 90&deg;.</strong> <span class="num">torch.rot90(x, 1, (&minus;2, &minus;1))</span> turns the image a quarter turn counter-clockwise, a permutation of the pixels. Its inverse is a quarter turn the other way, and the notebook checks that the two undo each other. Prompt pair: (prompt to be updated).</li>
-          <li><strong>Negation.</strong> In <span class="num">[&minus;1, 1]</span> pixel space, <span class="num">x &rarr; &minus;x</span> is colour inversion, a photographic negative. It is <span class="num">&minus;I</span>, which is orthogonal and its own inverse, and it maps Gaussian noise to Gaussian noise. Prompt pair: (prompt to be updated).</li>
+          <li><strong>Rotation by 90&deg;.</strong> <span class="num">torch.rot90(x, 1, (&minus;2, &minus;1))</span> turns the image a quarter turn counter-clockwise, a permutation of the pixels. Its inverse is a quarter turn the other way, and the notebook checks that the two undo each other. The pair is &ldquo;an oil painting of a lighthouse on a cliff&rdquo; upright and &ldquo;an oil painting of a whale&rdquo; after the turn: a tall tower lying on its side has a whale's long body.</li>
+          <li><strong>Negation.</strong> In <span class="num">[&minus;1, 1]</span> pixel space, <span class="num">x &rarr; &minus;x</span> is colour inversion, a photographic negative. It is <span class="num">&minus;I</span>, which is orthogonal and its own inverse, and it maps Gaussian noise to Gaussian noise. My first pair, a polar bear in the snow and a black cat in the dark, collapsed to a blank white image. The negative of a cat in the dark is an almost white frame, and so is a polar bear in the snow, so both prompts agreed on drawing nothing. Pairing a black ink drawing on white paper with a white chalk drawing on a blackboard makes the backgrounds agree instead, so only the subject's lines have to serve both prompts: &ldquo;a black ink drawing of a teapot on white paper&rdquo; and, inverted, &ldquo;a white chalk drawing of an elephant on a blackboard&rdquo;.</li>
         </ul>
       </div>
 <pre class="codeblock"><code>def anagram_view(noise, condition_a, condition_b, view, inverse_view,
@@ -716,20 +698,28 @@ def negate(x):    return -x                          # its own inverse
 
 VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></pre>
 
-      <p class="fig-label">Fig. 18 &middot; A quarter turn and a negative</p>
+      <p class="fig-label">Fig. 19 &middot; A quarter turn and a negative</p>
       <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_rotate90_views.png</div><img src="media/parta/anagram_rotate90_views.png" alt="Rotation anagram, shown upright and turned 90 degrees."></div>
-        <figcaption><span class="plate__label">Upright &middot; turned 90&deg; &middot; (prompt to be updated)</span><span class="spec">view: rot90</span></figcaption>
+        <div class="plate__well"><img src="media/parta/anagram_rotate90_views.jpg" alt="Rotation anagram: upright, an oil painting of a dark lighthouse on a rock in a blue sea; turned 90 degrees, an oil painting of a whale."></div>
+        <figcaption><span class="plate__label">&ldquo;an oil painting of a lighthouse on a cliff&rdquo; &middot; turned 90&deg;: &ldquo;an oil painting of a whale&rdquo;</span><span class="spec">seed 182</span></figcaption>
       </figure>
-      <figure class="plate solo fit-contain" style="--ratio: 880 / 440">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/anagram_negate_views.png</div><img src="media/parta/anagram_negate_views.png" alt="Negation anagram, shown as generated and colour-inverted."></div>
-        <figcaption><span class="plate__label">As generated &middot; inverted &middot; (prompt to be updated)</span><span class="spec">view: negate</span></figcaption>
+      <figure class="plate solo fit-contain" style="--ratio: 880 / 439">
+        <div class="plate__well"><img src="media/parta/anagram_negate_views.jpg" alt="Negation anagram: a black ink drawing of a teapot on white paper; colour-inverted, a white chalk drawing of an elephant on a blackboard, with the spout as the trunk."></div>
+        <figcaption><span class="plate__label">&ldquo;a black ink drawing of a teapot on white paper&rdquo; &middot; inverted: &ldquo;a white chalk drawing of an elephant on a blackboard&rdquo;</span><span class="spec">seed 180</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: B&W anagrams: the final prompt pairs (body text and Fig. 18 captions); how well each view works; comparison with the 180-degree anagrams. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>How convincing each view is, and how the two compare with the 180&deg; anagrams.</p>
+      <div class="prose">
+        <p>Both work. Upright, the lighthouse is a dark tower with a lit lantern on a rock in the sea. Turned, the tower becomes the whale's body and the white streaks down its side become the grooves of a humpback's throat. The lantern stays visible on the whale's snout, which gives the trick away a little. The negative is the best illusion on this page: the teapot's spout is the elephant's trunk, the lid knob sits on its head, and the pot's body and feet are the elephant's body and legs, so neither reading needs anything the other does not.</p>
+        <p>I generated three seeds for each of two pairs per view. For the negative, a rabbit and a dog mostly gave a rabbit in both views. For the quarter turn, a rabbit and a duck worked nearly as well as the whale:</p>
+      </div>
+
+      <p class="fig-label">Fig. 20 &middot; A rabbit that turns into a duck, three seeds</p>
+      <figure class="plate solo solo--narrow fit-contain" style="--ratio: 880 / 1320">
+        <div class="plate__well"><img src="media/parta/anagram_rotate90_candidates_1.jpg" alt="Three rotation anagrams, seeds 180 to 182: an oil painting of a rabbit, and the same painting turned 90 degrees as an oil painting of a duck."></div>
+        <figcaption><span class="plate__label">&ldquo;an oil painting of a rabbit&rdquo; &middot; turned: &ldquo;a duck&rdquo;</span><span class="spec">seeds 180&ndash;182</span></figcaption>
+      </figure>
+      <div class="prose">
+        <p>Seed 181 is the classic duck&ndash;rabbit: one animal, where the rabbit's ear becomes the duck's bill after the turn. Seeds 180 and 182 cheat by painting a rabbit and a duck side by side.</p>
       </div>
 
       <div class="prose">
@@ -737,16 +727,14 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <p>For the logo I used text-guided editing from 3.2 on the Campanile, with the prompt &ldquo;a minimalist flat vector logo of a clock tower inside a camera lens, blue and gold&rdquo;, at the same seven starting times. The Campanile stands for Berkeley, blue and gold are its colours, and the lens stands for the photography half of the course. Flat vector art is far from a photo, so I expected the low starting times to give the cleanest logo and the high ones to stay too close to the photograph.</p>
       </div>
 
-      <p class="fig-label">Fig. 19 &middot; The Campanile edited toward a logo</p>
+      <p class="fig-label">Fig. 21 &middot; The Campanile edited toward a logo</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1760 / 880">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>parta/logo.png</div><img src="media/parta/logo.png" alt="The Campanile edited toward a minimalist blue and gold logo of a clock tower inside a camera lens, starting times 0.02 to 0.50."></div>
+        <div class="plate__well"><img src="media/parta/logo.jpg" alt="The Campanile edited toward a minimalist blue and gold logo of a clock tower inside a camera lens, starting times 0.02 to 0.50."></div>
         <figcaption><span class="plate__label">&ldquo;a minimalist flat vector logo of a clock tower inside a camera lens, blue and gold&rdquo;</span><span class="spec">t = 0.02 &hellip; 0.50</span></figcaption>
       </figure>
 
-      <!-- PENDING-OBS: logo: which starting time I chose as the logo and why. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Which starting time gives the best logo, and why.</p>
+      <div class="prose">
+        <p>The lowest starting time gives the only real logo: a flat gold tower inside a blue disc with a gold ring, which is as close as the model gets to a clock tower inside a camera lens. From 0.04 to 0.14 the results are flat vector illustrations of the Campanile in a landscape rather than logos, and from 0.25 they turn back into photos. I would use t = 0.02.</p>
       </div>
     </section>
 
@@ -811,9 +799,9 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <h3>1.2 The noising process</h3>
         <p>Four test digits, each with one fixed noise sample (seed 180) scaled by &sigma; = 0, 0.2, 0.4, 0.5, 0.6, 0.8 and 1.0.</p>
       </div>
-      <p class="fig-label">Fig. 20 &middot; z = x + &sigma;&epsilon; for increasing &sigma;</p>
+      <p class="fig-label">Fig. 22 &middot; z = x + &sigma;&epsilon; for increasing &sigma;</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/noise_levels.png</div><img src="media/partb/noise_levels.png" alt="Four MNIST test digits, one per row, with noise of sigma 0, 0.2, 0.4, 0.5, 0.6, 0.8 and 1.0 across the columns."></div>
+        <div class="plate__well"><img src="media/partb/noise_levels.png" alt="Four MNIST test digits, one per row, with noise of sigma 0, 0.2, 0.4, 0.5, 0.6, 0.8 and 1.0 across the columns."></div>
         <figcaption><span class="plate__label"><span class="nocase">&sigma;</span> = 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0</span><span class="spec">one row per digit</span></figcaption>
       </figure>
 
@@ -827,19 +815,19 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
     loss = criterion(model(noisy_images), images)                    # nn.MSELoss
     optimizer.zero_grad(); loss.backward(); optimizer.step()</code></pre>
 
-      <p class="fig-label">Fig. 21 &middot; Training loss, &sigma; = 0.5</p>
+      <p class="fig-label">Fig. 23 &middot; Training loss, &sigma; = 0.5</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_loss.png</div><img src="media/partb/denoise_loss.png" alt="Training loss of the one-step denoiser over all optimizer steps, with a moving average."></div>
+        <div class="plate__well"><img src="media/partb/denoise_loss.png" alt="Training loss of the one-step denoiser over all optimizer steps, with a moving average."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">1,175 steps &middot; 100-step average</span></figcaption>
       </figure>
 
-      <p class="fig-label">Fig. 22 &middot; Held-out digits after epochs 1 and 5</p>
+      <p class="fig-label">Fig. 24 &middot; Held-out digits after epochs 1 and 5</p>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 413">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_epoch1.png</div><img src="media/partb/denoise_epoch1.png" alt="After epoch 1: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
+        <div class="plate__well"><img src="media/partb/denoise_epoch1.png" alt="After epoch 1: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
         <figcaption><span class="plate__label">Epoch 1</span><span class="spec">rows: clean, noisy, denoised</span></figcaption>
       </figure>
       <figure class="plate solo solo--wide fit-contain" style="--ratio: 1440 / 413">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_epoch5.png</div><img src="media/partb/denoise_epoch5.png" alt="After epoch 5: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
+        <div class="plate__well"><img src="media/partb/denoise_epoch5.png" alt="After epoch 5: eight clean test digits, the same digits with noise of sigma 0.5, and the denoised outputs."></div>
         <figcaption><span class="plate__label">Epoch 5</span><span class="spec">rows: clean, noisy, denoised</span></figcaption>
       </figure>
 
@@ -862,9 +850,9 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <h3>1.2.2 Out-of-distribution testing</h3>
         <p>The denoiser only ever saw &sigma; = 0.5. Here the trained model gets three test digits, each with one fixed noise sample, and only &sigma; changes, from 0 to 1.</p>
       </div>
-      <p class="fig-label">Fig. 23 &middot; One digit, one noise sample, seven noise levels</p>
+      <p class="fig-label">Fig. 25 &middot; One digit, one noise sample, seven noise levels</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 827">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/denoise_ood.png</div><img src="media/partb/denoise_ood.png" alt="Three test digits at sigma 0 to 1: rows alternate between the noisy input and the denoiser's output."></div>
+        <div class="plate__well"><img src="media/partb/denoise_ood.png" alt="Three test digits at sigma 0 to 1: rows alternate between the noisy input and the denoiser's output."></div>
         <figcaption><span class="plate__label"><span class="nocase">&sigma;</span> = 0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0</span><span class="spec">rows: noisy, denoised &times; 3 digits</span></figcaption>
       </figure>
 
@@ -877,23 +865,23 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
         <p>To make the denoiser generate, I trained a fresh <span class="num">D = 128</span> UNet with the same settings, but with pure Gaussian noise as the input and a random training digit as the target. The input now says nothing about which digit it should become. For the figures I fixed 16 noise inputs (seed 181).</p>
       </div>
 
-      <p class="fig-label">Fig. 24 &middot; Training loss on pure noise</p>
+      <p class="fig-label">Fig. 26 &middot; Training loss on pure noise</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/pure_noise_loss.png</div><img src="media/partb/pure_noise_loss.png" alt="Training loss of the pure-noise denoiser over all optimizer steps, with a moving average."></div>
+        <div class="plate__well"><img src="media/partb/pure_noise_loss.png" alt="Training loss of the pure-noise denoiser over all optimizer steps, with a moving average."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">input: pure noise</span></figcaption>
       </figure>
 
-      <p class="fig-label">Fig. 25 &middot; Outputs from pure noise after epochs 1 and 5</p>
+      <p class="fig-label">Fig. 27 &middot; Outputs from pure noise after epochs 1 and 5</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/pure_noise_epoch1.png</div><img src="media/partb/pure_noise_epoch1.png" alt="After epoch 1: sixteen noise inputs in the top two rows and the model's outputs in the bottom two rows."></div>
+        <div class="plate__well"><img src="media/partb/pure_noise_epoch1.png" alt="After epoch 1: sixteen noise inputs in the top two rows and the model's outputs in the bottom two rows."></div>
         <figcaption><span class="plate__label">Epoch 1</span><span class="spec">rows 1&ndash;2 noise, rows 3&ndash;4 outputs</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/pure_noise_epoch5.png</div><img src="media/partb/pure_noise_epoch5.png" alt="After epoch 5: sixteen noise inputs in the top two rows and the model's outputs in the bottom two rows."></div>
+        <div class="plate__well"><img src="media/partb/pure_noise_epoch5.png" alt="After epoch 5: sixteen noise inputs in the top two rows and the model's outputs in the bottom two rows."></div>
         <figcaption><span class="plate__label">Epoch 5</span><span class="spec">rows 1&ndash;2 noise, rows 3&ndash;4 outputs</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 240">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/mean_training_image.png</div><img src="media/partb/mean_training_image.png" alt="The pixel-wise mean of all 60,000 MNIST training images."></div>
+        <div class="plate__well"><img src="media/partb/mean_training_image.png" alt="The pixel-wise mean of all 60,000 MNIST training images."></div>
         <figcaption><span class="plate__label">Mean of all training digits</span><span class="spec">for comparison</span></figcaption>
       </figure>
 
@@ -953,9 +941,9 @@ def forward(self, x, t):
     x_t = (1 - t_) * x_0 + t_ * x_1
     return F.mse_loss(unet(x_t, t), x_1 - x_0)</code></pre>
 
-      <p class="fig-label">Fig. 26 &middot; Training loss, time-conditioned UNet</p>
+      <p class="fig-label">Fig. 28 &middot; Training loss, time-conditioned UNet</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_loss.png</div><img src="media/partb/time_loss.png" alt="Flow matching training loss of the time-conditioned UNet over 10 epochs."></div>
+        <div class="plate__well"><img src="media/partb/time_loss.png" alt="Flow matching training loss of the time-conditioned UNet over 10 epochs."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">10 epochs, exponential lr decay</span></figcaption>
       </figure>
 
@@ -972,17 +960,17 @@ def time_fm_sample(unet, img_wh, num_ts, seed=0, num_samples=40):
         x = x + unet(x, t) / num_ts                  # Euler step, h = 1 / num_ts
     return x</code></pre>
 
-      <p class="fig-label">Fig. 27 &middot; Forty samples after epochs 1, 5 and 10</p>
+      <p class="fig-label">Fig. 29 &middot; Forty samples after epochs 1, 5 and 10</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_epoch1.png</div><img src="media/partb/time_epoch1.png" alt="Forty samples from the time-conditioned UNet after one epoch."></div>
+        <div class="plate__well"><img src="media/partb/time_epoch1.png" alt="Forty samples from the time-conditioned UNet after one epoch."></div>
         <figcaption><span class="plate__label">Epoch 1</span><span class="spec">50 steps, seed 180</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_epoch5.png</div><img src="media/partb/time_epoch5.png" alt="Forty samples from the time-conditioned UNet after five epochs."></div>
+        <div class="plate__well"><img src="media/partb/time_epoch5.png" alt="Forty samples from the time-conditioned UNet after five epochs."></div>
         <figcaption><span class="plate__label">Epoch 5</span><span class="spec">50 steps, seed 180</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_epoch10.png</div><img src="media/partb/time_epoch10.png" alt="Forty samples from the time-conditioned UNet after ten epochs."></div>
+        <div class="plate__well"><img src="media/partb/time_epoch10.png" alt="Forty samples from the time-conditioned UNet after ten epochs."></div>
         <figcaption><span class="plate__label">Epoch 10</span><span class="spec">50 steps, seed 180</span></figcaption>
       </figure>
 
@@ -1022,9 +1010,9 @@ return F.mse_loss(unet(x_t, c, t, mask), x_1 - x_0)</code></pre>
         <h3>2.5 Training</h3>
         <p>The same recipe as 2.2: <span class="num">D = 64</span>, batch size 64, Adam from 1e-2 with the same exponential decay, 10 epochs.</p>
       </div>
-      <p class="fig-label">Fig. 28 &middot; Training loss, class-conditioned UNet</p>
+      <p class="fig-label">Fig. 30 &middot; Training loss, class-conditioned UNet</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_loss.png</div><img src="media/partb/class_loss.png" alt="Flow matching training loss of the class-conditioned UNet over 10 epochs."></div>
+        <div class="plate__well"><img src="media/partb/class_loss.png" alt="Flow matching training loss of the class-conditioned UNet over 10 epochs."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">10 epochs, exponential lr decay</span></figcaption>
       </figure>
 
@@ -1044,17 +1032,17 @@ return F.mse_loss(unet(x_t, c, t, mask), x_1 - x_0)</code></pre>
         <p>The grids show four of each digit, laid out so that column <span class="num">k</span> is digit <span class="num">k</span>, from the same starting noise (seed 180) at every checkpoint.</p>
       </div>
 
-      <p class="fig-label">Fig. 29 &middot; Four of each digit after epochs 1, 5 and 10</p>
+      <p class="fig-label">Fig. 31 &middot; Four of each digit after epochs 1, 5 and 10</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_epoch1.png</div><img src="media/partb/class_epoch1.png" alt="Class-conditioned samples after one epoch: four rows, column k is digit k."></div>
+        <div class="plate__well"><img src="media/partb/class_epoch1.png" alt="Class-conditioned samples after one epoch: four rows, column k is digit k."></div>
         <figcaption><span class="plate__label">Epoch 1</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_epoch5.png</div><img src="media/partb/class_epoch5.png" alt="Class-conditioned samples after five epochs: four rows, column k is digit k."></div>
+        <div class="plate__well"><img src="media/partb/class_epoch5.png" alt="Class-conditioned samples after five epochs: four rows, column k is digit k."></div>
         <figcaption><span class="plate__label">Epoch 5</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_epoch10.png</div><img src="media/partb/class_epoch10.png" alt="Class-conditioned samples after ten epochs: four rows, column k is digit k."></div>
+        <div class="plate__well"><img src="media/partb/class_epoch10.png" alt="Class-conditioned samples after ten epochs: four rows, column k is digit k."></div>
         <figcaption><span class="plate__label">Epoch 10</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
 
@@ -1072,18 +1060,18 @@ nosched_fm = ClassConditionalFM(ClassConditionalUNet(1, 10, 64).to(device), num_
 train_flow(nosched_fm, num_epochs=10, lr=NO_SCHEDULER_LR, name='class_no_scheduler',
            use_scheduler=False, conditional=True)</code></pre>
 
-      <p class="fig-label">Fig. 30 &middot; Constant learning rate, no scheduler</p>
+      <p class="fig-label">Fig. 32 &middot; Constant learning rate, no scheduler</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_no_scheduler_loss.png</div><img src="media/partb/class_no_scheduler_loss.png" alt="Training loss of the class-conditioned UNet trained at a constant learning rate of 0.001."></div>
+        <div class="plate__well"><img src="media/partb/class_no_scheduler_loss.png" alt="Training loss of the class-conditioned UNet trained at a constant learning rate of 0.001."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">constant lr = 1e-3</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/class_no_scheduler_epoch10.png</div><img src="media/partb/class_no_scheduler_epoch10.png" alt="Class-conditioned samples after ten epochs at a constant learning rate, no scheduler: four rows, column k is digit k."></div>
+        <div class="plate__well"><img src="media/partb/class_no_scheduler_epoch10.png" alt="Class-conditioned samples after ten epochs at a constant learning rate, no scheduler: four rows, column k is digit k."></div>
         <figcaption><span class="plate__label">Epoch 10, no scheduler</span><span class="spec"><span class="nocase">&gamma;</span> = 5, 300 steps</span></figcaption>
       </figure>
 
       <div class="prose">
-        <p>The constant learning rate works. The final loss is 0.0856 against 0.0849 with the scheduler, less than 1% higher, and the curve has the same shape. After 10 epochs all 40 samples are the right digit and look almost the same as the scheduled run in Fig. 29, since both start from the same weights and the same noise. The differences are small: a few strokes are rougher, the 4 in the top row has a doubled stroke and the 8 in the second row a stray tail, and the stray dot beside the third-row 5 appears here too. For this model and 10 epochs, a constant 1e-3 is enough to replace the schedule.</p>
+        <p>The constant learning rate works. The final loss is 0.0856 against 0.0849 with the scheduler, less than 1% higher, and the curve has the same shape. After 10 epochs all 40 samples are the right digit and look almost the same as the scheduled run in Fig. 31, since both start from the same weights and the same noise. The differences are small: a few strokes are rougher, the 4 in the top row has a doubled stroke and the 8 in the second row a stray tail, and the stray dot beside the third-row 5 appears here too. For this model and 10 epochs, a constant 1e-3 is enough to replace the schedule.</p>
       </div>
     </section>
 
@@ -1103,7 +1091,7 @@ train_flow(nosched_fm, num_epochs=10, lr=NO_SCHEDULER_LR, name='class_no_schedul
           <li><strong>Longer:</strong> 20 epochs instead of 10. The exponential decay is stretched over the 20 epochs, &gamma; = 0.1<sup>1/20</sup>, so it still ends at 1e-3.</li>
           <li><strong>Finer sampling:</strong> 300 Euler steps instead of 50.</li>
         </ul>
-        <p>The sampler change alone could explain part of any improvement, so I also sampled the original model from 2.2 with 300 steps. All three grids start from the same noise (seed 180), so they can be compared digit by digit with Fig. 27.</p>
+        <p>The sampler change alone could explain part of any improvement, so I also sampled the original model from 2.2 with 300 steps. All three grids start from the same noise (seed 180), so they can be compared digit by digit with Fig. 29.</p>
       </div>
 <pre class="codeblock"><code>torch.manual_seed(SEED)
 better_time_fm = TimeConditionalFM(TimeConditionalUNet(1, 10, 128).to(device), num_ts=300)
@@ -1112,24 +1100,24 @@ train_flow(better_time_fm, num_epochs=20, lr=1e-2, name='time_better')
 # ablation: the 2.2 model (D = 64, 10 epochs) with 300 steps
 time_fm_sample(time_fm.unet, (28, 28), 300, seed=SEED)</code></pre>
 
-      <p class="fig-label">Fig. 31 &middot; Training loss, D = 128 over 20 epochs</p>
+      <p class="fig-label">Fig. 33 &middot; Training loss, D = 128 over 20 epochs</p>
       <figure class="plate solo fit-contain" style="--ratio: 960 / 360">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_better_loss.png</div><img src="media/partb/time_better_loss.png" alt="Training loss of the wider time-conditioned UNet over 20 epochs."></div>
+        <div class="plate__well"><img src="media/partb/time_better_loss.png" alt="Training loss of the wider time-conditioned UNet over 20 epochs."></div>
         <figcaption><span class="plate__label">MSE per step</span><span class="spec">D = 128, 20 epochs</span></figcaption>
       </figure>
 
-      <p class="fig-label">Fig. 32 &middot; Separating the sampler from the model</p>
+      <p class="fig-label">Fig. 34 &middot; Separating the sampler from the model</p>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_epoch10_300steps.png</div><img src="media/partb/time_epoch10_300steps.png" alt="Forty samples from the original time-conditioned UNet, D 64 after 10 epochs, sampled with 300 Euler steps."></div>
+        <div class="plate__well"><img src="media/partb/time_epoch10_300steps.png" alt="Forty samples from the original time-conditioned UNet, D 64 after 10 epochs, sampled with 300 Euler steps."></div>
         <figcaption><span class="plate__label">2.2 model, 300 steps</span><span class="spec">D = 64, 10 epochs</span></figcaption>
       </figure>
       <figure class="plate solo fit-contain" style="--ratio: 1440 / 552">
-        <div class="plate__well"><div class="plate__ph"><b>Result pending</b>partb/time_better_epoch20.png</div><img src="media/partb/time_better_epoch20.png" alt="Forty samples from the wider time-conditioned UNet, D 128 after 20 epochs, sampled with 300 Euler steps."></div>
+        <div class="plate__well"><img src="media/partb/time_better_epoch20.png" alt="Forty samples from the wider time-conditioned UNet, D 128 after 20 epochs, sampled with 300 Euler steps."></div>
         <figcaption><span class="plate__label">Better model, 300 steps</span><span class="spec">D = 128, 20 epochs</span></figcaption>
       </figure>
 
       <div class="prose">
-        <p>The sampler was not the bottleneck. The 2.2 model with 300 steps (first grid) is almost indistinguishable from its 50-step samples in Fig. 27, so the learned flow is close to straight and 50 Euler steps already follow it well.</p>
+        <p>The sampler was not the bottleneck. The 2.2 model with 300 steps (first grid) is almost indistinguishable from its 50-step samples in Fig. 29, so the learned flow is close to straight and 50 Euler steps already follow it well.</p>
         <p>The wider, longer-trained model does help, but modestly. Several ambiguous cells become clear digits: the B-shaped 8 in the top row becomes a 4, the looped 7 near the end of the top row becomes a 9, and the y-shape that starts the third row becomes a 4. Strokes are a little smoother overall. But the squiggle in the second row and the broken stroke in the third row are still not digits, the 6 near the end of the bottom row got worse, and the grid is still well short of the class-conditioned samples. The loss curve has one brief spike around step 4,000 and recovers. So nearly all of the gain comes from the bigger model and longer training rather than the sampler, and conditioning on the class matters far more than either.</p>
       </div>
     </section>
@@ -1143,10 +1131,9 @@ time_fm_sample(time_fm.unet, (28, 28), 300, seed=SEED)</code></pre>
         <h2 class="part__title" id="part-15-title">What I learned</h2>
       </header>
 
-      <!-- PENDING-OBS: closing reflection, written after seeing all results. -->
-      <div class="note">
-        <span class="note__label">Observations pending</span>
-        <p>Written once all the results are in.</p>
+      <div class="prose">
+        <p>The same Euler loop did everything in Part A. It cleaned a noisy photo, drew portraits from pure noise, edited my paintings and made illusions; the only things that changed were where it started and which velocity it followed. Editing made the image manifold feel concrete. From a little noise the model fills in plausible content, not my content, so a painting of Spike became a plush toy and then a stranger, and the starting time decided how much of my picture survived. The illusions worked when two prompts could share most of the image, like the teapot and the elephant, and failed when both could be satisfied by drawing nothing, like the polar bear and the black cat.</p>
+        <p>Part B showed the same ideas from the inside. Trained on pure noise with an MSE loss, the one-step UNet did exactly what it was asked and output the average digit. The same network predicting a velocity and taking small steps drew real digits, and telling it the class helped far more than a wider network or more sampling steps. The lesson I will keep is that a good number and a good image are not the same thing: Euler had a higher error than one step and looked much more like a photograph, because a sharp guess is punished more than a blurry one.</p>
       </div>
     </section>
 
