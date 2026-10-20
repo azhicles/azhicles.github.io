@@ -899,9 +899,6 @@ VIEWS = {"rotate90": (rotate90, rotate270), "negate": (negate, negate)}</code></
 
       <div class="prose">
         <p>Why this cannot work: with an MSE loss, the best output for a given input is the average of all the targets that come with that input. Here the input is independent of the target, so every noise image comes with every digit, and the best output is the same for all of them: the pixel-wise mean of the training set, which is a blurry overlay of all ten digits. It is the centroid of the data, the single image closest on average to every training digit. That mean is plotted above for comparison.</p>
-      </div>
-
-      <div class="prose">
         <p>That is exactly what happened. The loss drops to about 0.07 within the first 50 or so steps and then stays flat (0.067 over the last 100 steps, against 0.0083 for the &sigma; = 0.5 denoiser). All 16 outputs are the same image whatever noise goes in: a blurry grey blob that looks like several digits laid on top of each other, most clearly a 0 and a 9. After one epoch it is slightly grainy; after five it is smooth and very close to the mean of the training set shown above. The model has learned to ignore its input and output the centroid of the data.</p>
       </div>
     </section>
